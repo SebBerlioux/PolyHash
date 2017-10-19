@@ -9,21 +9,15 @@
     >>> from polyhash import say_hello
     >>> say_hello("World")
 """
-
-__all__ = ['say_hello']  # ajouter dans cette liste tous les symboles 'importables'
-
-
-def say_hello(entity):
-    """
-        Fonction de politesse.
-
-        :param entity: Le truc à qui on dit bonjour
-        :type entity: string
-        :return: Rien, parce que c'est uniquement pour l'exemple
-        :rtype: None
-    """
-    print("Hello {}!".format(entity))
-
-
-if __name__ == "__main__":
-    say_hello("World")
+import os
+import sys
+__all__ = ['getArgument','getExecutionDirectory']  # ajouter dans cette liste tous les symboles 'importables'
+#repertoire d'excecution du script
+execDirectory = os.getcwd()
+#fichier passer en parametre (map a analyser)
+Args = sys.argv
+[execDirectory+"/"+ s for s in Args]
+def getExecutionDirectory():
+    return execDirectory
+def getArgument():
+    return Args

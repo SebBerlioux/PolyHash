@@ -16,6 +16,5 @@ __version__ = "0.0.1"
 
 # permet l'usage dans le module main de: from .polyhash import solve
 # plutôt que: from .polyhash.polyhsolver import solve
-from .polyhsolver import solve
-from .polyhmodel import useless
-from .polyhutils import say_hello
+from .polyhmodel import *
+from .polyhutils import *

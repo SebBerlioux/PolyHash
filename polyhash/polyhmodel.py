@@ -10,22 +10,27 @@ __all__ = ['cell','mapRepresentation','bitmap'] # ajouter dans cette liste tous 
 
 from PIL import Image
 #class representant une cellule de la carte
+#classe remplacée par la classe du fichier cell.py ?
 class cell:
     def __init__(self,r=0,c=0):
         self.row = r
         self.column = c
 
-#class representant une carte
-#rowsNumber = nombre de ligne
-#columnsNumber = nombre de colonne
-#routerRangeRadius = rayon des routeurs
-#routerCosts = cout d'un routeur
-#backboneCosts = cout des cellules de fibre
-#buget = budget de la carte
-#map = matrice des caractere composant la carte
-#isInit = si la carte est initialise avec un fichier
+
 class mapRepresentation:
+    """
+    Classe representant une carte
+    - rowsNumber -> nombre de ligne
+    - columnsNumber -> nombre de colonne
+    - routerRangeRadius -> rayon des routeurs
+    - routerCosts -> cout d'un routeur
+    - backboneCosts -> cout des cellules de fibre
+    - buget -> budget de la carte
+    - map -> matrice des caractere composant la carte
+    - isInit -> si la carte est initialise avec un fichier
+    """
     def __init__(self,fileName = None):
+        """ Constructeur de la classe """
         self.source = ""
         self.isInit = False
         self.map = list()
@@ -38,8 +43,9 @@ class mapRepresentation:
         self.firstCell = cell()
         if(fileName != None):
             self.initFromFile(fileName)
-    #initialise la carte avec un fichier
+
     def initFromFile(self,file):
+        """ Initialise la carte avec un fichier """
         self.source = file
         file_reader = open(file,"r")
         self.isInit = True
@@ -65,8 +71,9 @@ class mapRepresentation:
                 self.map.append(line)
             lineCounter +=1
         self.isInit = True
-    #renvoit la description de la carte
+
     def getDescription(self):
+        """ Renvoie la description de la carte """
         if(self.isInit == True):
             STR="Map source : "+self.source+"\n"
             STR += str(self.rowsNumber) + " rows, "+str(self.columnsNumber)+" columns, router range radius is "+str(self.routerRangeRadius)+"\n"
@@ -76,13 +83,17 @@ class mapRepresentation:
         else:
             return "MAP NOT INITIALISED"
 
-#Class gerant l'enregistrement d'une matrice de caractere en une Image
-#noneArg = caractere representant une cellule non initialise (pour l'addition de bitmap)
-#noneColor = couleur associe au noneArg
-#rgbDctionnary = dictionnaire associant un caractere a une couleur
-#charMap = matrice de caractere
+
 class bitmap:
+    """
+    Classe gerant l'enregistrement d'une matrice de caractere en une Image
+    - noneArg -> caractere representant une cellule non initialise (pour l'addition de bitmap)
+    - noneColor -> couleur associe au noneArg
+    - rgbDctionnary -> dictionnaire associant un caractere a une couleur
+    - charMap -> matrice de caractere
+    """
     def __init__(self,noneArg=None,noneColor=None,rgbDictionnary=None,charMap=None):
+        """ Constructeur de la classe """
         if(charMap!=None):
             self.charMap = charMap
         else:
@@ -99,8 +110,9 @@ class bitmap:
             self.noneColor = noneColor
         else:
             self.noneColor = (255,255,255)
-    #enregistre la bitmap sous forme de .png
+
     def save(self,file=None):
+        """ Enregistre la bitmap sous forme de .png """
         if(self.charMap==None):
             print("CharMap is not initialised")
             return None

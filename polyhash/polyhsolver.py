@@ -13,7 +13,8 @@
 
 __all__ = ['solve']  # ajouter dans cette liste tous les symboles 'importables'
 
-
+#liste des routeurs, valeur de 1 si connecté, 0 sinon
+rooters = [[]]
 
 
 def solve():

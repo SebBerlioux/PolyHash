@@ -22,10 +22,22 @@ class Cell:
         self.isCovered = False
         """Liste des cellules couvertes pour les cellules routeur"""
         self.coveredCell = []
-
+        self.potential = 0
+    """Indique qu'une cellule est déjà couverte"""
     def Cover():
         self.isCovered = True
-
+    """Indique les cellules que couvre le routeur"""
+    def coverSelfCell():
+        for cellule in self.coveredCell
+            cellule.Cover()
+    """Diminue le potentiel d'un routeur si une des cellules qu'il couvre est déjà couverte"""
+    def resetPotiental():
+        for cellule in self.coveredCell
+            if(cellule.isCovered==True):
+                self.potential -= 1
+    """Initialise le potentiel d'un routeur au nombre de cellule qu'il peut couvrir"""
+    def setPotential():
+        self.potential = len(self.coveredCell)
     def getCellType(char):
         if(char == '#'):
             return "WALL"

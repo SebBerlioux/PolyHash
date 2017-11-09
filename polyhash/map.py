@@ -73,7 +73,7 @@ class Map:
             return STR
         else:
             return "MAP NOT INITIALISED"
-
+    """Indique si des coordonnées d'une cellule sont hors de la carte"""
     def outOfMap(x,y):
         if(y<0 or x<0 or x>=self.rowsNumber or y>=self.columnsNumber):
             return False
@@ -98,3 +98,8 @@ class Map:
                     if(map[j][i].cellType != "WALL" and map[j][i].cellType != "VOID" and map[j][i].cellType != "NONE"):
                         if(self.isCoveredBy(map[j][i],cellRouter)==True):
                             cellRouter.coveredCell.append(map[j][i])
+        cellRouter.setPotential()
+    """A FAIRE"""
+    """Calul tout les routeurs de la carte"""
+    """Chaque routeur doit être mit dans une liste triée par leurs potentiels"""
+    #def analyseMap():

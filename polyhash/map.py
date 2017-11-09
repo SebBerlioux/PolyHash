@@ -54,7 +54,12 @@ class Map:
                 ThirdLine = line.split()
                 self.firstCell = Cell(int(ThirdLine[0]),int(ThirdLine[1]))
             if(lineCounter>2):
-                self.map.append(line)
+                self.map.append([])
+                LINE = line.split()
+                columnCounter = 0
+                for char in LINE:
+                    self.map[len(self.map)-1].append(Cell(len(self.map)-1,columnCounter,Cell.getCellType(char)))
+                    columnCounter += 1
             lineCounter +=1
         self.isInit = True
 
@@ -68,3 +73,28 @@ class Map:
             return STR
         else:
             return "MAP NOT INITIALISED"
+
+    def outOfMap(x,y):
+        if(y<0 or x<0 or x>=self.rowsNumber or y>=self.columnsNumber):
+            return False
+        else:
+            return True
+    """Détermine si une cellule cell est couverte par un routeur positionné à la cellule cellRouter"""
+    def isCoveredBy(self,cell,cellRouter):
+        """SUBSQUARING AREA"""
+        if(cell.cellType == "WALL" || cell.cellType == "VOID"):
+            return False
+        for i in range(cell.x,cellRouter.x+1):
+            for j in range(cell.y,cellRouter.y+1):
+                if(not outOfMap(j,i)):
+                    if(map[j][i].cellType=="WALL"):
+                        return False
+        return True
+    """Détermine les cellules que couvre un routeur"""
+    def buildArea(self,cellRouter):
+        for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius+1):
+            for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius+1):
+                if(not outOfMap(j,i)):
+                    if(map[j][i].cellType != "WALL" and map[j][i].cellType != "VOID" and map[j][i].cellType != "NONE"):
+                        if(self.isCoveredBy(map[j][i],cellRouter)==True):
+                            cellRouter.coveredCell.append(map[j][i])

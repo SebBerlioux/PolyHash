@@ -3,7 +3,7 @@ from polyhash import *
 
 def main():
     #récupère la carte
-    mapIn = mapRepresentation(getArgument()[1])
+    mapIn = Map(getArgument()[1])
     #creation du dictionnaire associant un caractere a une couleur
     charDictionnary = dict()
     charDictionnary['-']=(125,125,125)
@@ -12,10 +12,11 @@ def main():
     #recuperation du tableau de caractere representant la carte
     MAP = mapIn.map
     #creation de la bitmap
-    temp = bitmap('X',(6,6,6),charDictionnary,MAP)
+    temp = Bitmap('X',(6,6,6),charDictionnary,MAP)
     #sauvegarde la bitmap en out.png
     temp.save()
     #mapIn.saveAsImage()
+    
 
 if __name__ == '__main__':
     main()

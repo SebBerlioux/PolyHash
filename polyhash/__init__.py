@@ -18,3 +18,5 @@ __version__ = "0.0.1"
 # plutôt que: from .polyhash.polyhsolver import solve
 from .polyhmodel import *
 from .polyhutils import *
+from .cell import *
+from .map import *

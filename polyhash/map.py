@@ -1,9 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 __all__ = ['Map'] # ajouter dans cette liste tous les symboles 'importables'
 
 
 from PIL import Image
 from .cell import Cell
+from .RouterList import RouterList
 from .polyhmodel import Bitmap
+
+
 class Map:
     """
     Classe representant une carte
@@ -18,6 +24,7 @@ class Map:
     """
     def __init__(self,fileName = None):
         """ Constructeur de la classe """
+        self.routerList = RouterList()
         self.source = ""
         self.isInit = False
         self.map = list()
@@ -77,12 +84,14 @@ class Map:
             return STR
         else:
             return "MAP NOT INITIALISED"
+
     """Indique si des coordonnées d'une cellule sont hors de la carte"""
     def outOfMap(self,x,y):
         if(y<0 or x<0 or x>=self.rowsNumber or y>=self.columnsNumber):
             return True
         else:
             return False
+
     """Détermine si une cellule cell est couverte par un routeur positionné à la cellule cellRouter"""
     def isCoveredBy(self,cell,cellRouter):
         """SUBSQUARING AREA"""
@@ -100,43 +109,48 @@ class Map:
                     if(self.map[j][i].cellType=="WALL"):
                         return False
         return True
+
     """Détermine les cellules que couvre un routeur"""
     def buildArea(self,cellRouter):
-        for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius+1):
-            for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius+1):
+        for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius):
+            for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius):
                 if(self.outOfMap(j,i)==False):
                     if(self.map[j][i].cellType == "FLOOR"):
                         if(self.isCoveredBy(self.map[j][i],cellRouter)==True):
                             cellRouter.coveredCell.append(self.map[j][i])
         cellRouter.setPotential()
+
     """Calul tout les routeurs de la carte"""
     """Chaque routeur doit être mit dans une liste triée par leurs potentiels"""
     def analyseMap(self):
-        routeurList = []
         for j in range(len(self.map)):
             for i in range(len(self.map[j])):
                 if(self.map[j][i].cellType == "FLOOR"):
-                    routeurList.append(routeurList)
                     self.buildArea(self.map[j][i])
+                    self.routerList.insert(self.map[j][i].potential, self.map[j][i])
 
     def potentialToChar(self,potential):
+        """Transforme le potentiel en un caractère"""
         maxPotential = (self.routerRangeRadius*2)*(self.routerRangeRadius*2)
         temp = (chr(ord('A')+int(potential/maxPotential/24)))
         return temp
-    def saveASCIIMap(self):
-            charDictionnary = dict()
-            charDictionnary['-']=(125,125,125)
-            charDictionnary['#']=(0,0,0)
-            charDictionnary['.']=(255,255,255)
-            charDictionnary['E']=(255,0,0)
 
-            #recuperation du tableau de caractere representant la carte
-            MAP = self.asciiMap
-            #creation de la bitmap
-            temp = Bitmap('X',(6,6,6),charDictionnary,MAP)
-            #sauvegarde la bitmap en out.png
-            temp.save()
+    def saveASCIIMap(self):
+        """Sauvegarde la carte en Bitmap"""
+        charDictionnary = dict()
+        charDictionnary['-']=(125,125,125)
+        charDictionnary['#']=(0,0,0)
+        charDictionnary['.']=(255,255,255)
+        charDictionnary['E']=(255,0,0)
+        #recuperation du tableau de caractere representant la carte
+        MAP = self.asciiMap
+        #creation de la bitmap
+        temp = Bitmap('X',(6,6,6),charDictionnary,MAP)
+        #sauvegarde la bitmap en out.png
+        temp.save()
+
     def saveASCIIMapAsFile(self,fileName):
+        """Sauvegarde la carte sous forme de texte"""
         file = open(fileName,'w')
         for line in self.asciiMap:
             temp = ""
@@ -144,3 +158,17 @@ class Map:
                 temp += char
             file.write(temp)
         file.close()
+
+    def placeRouter(self):
+        """Méthode de placement de routeur intelligente"""
+        placedRouter = []
+        isFirst = True
+        for i in range(0, len(self.routerList.listPotential)):
+            for router in self.routerList[i]:
+                if isFirst == True:
+                    isFirst = False
+                else:
+                    router.resetPotiental()
+                placedRouter.append(router)
+                router.isRouter = True
+                router.coverSelfCell()

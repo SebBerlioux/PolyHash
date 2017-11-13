@@ -14,6 +14,7 @@ class Cell:
     - routeur
     - fibre
     """
+
     def __init__(self, row=0, column=0, cellType="NONE"):
         """ Constructeur de la classe """
         self.row = row
@@ -23,23 +24,30 @@ class Cell:
         """Liste des cellules couvertes pour les cellules routeur"""
         self.coveredCell = []
         self.potential = 0
+        self.isRouter = False
+
     """Indique qu'une cellule est déjà couverte"""
-    def Cover(self):
+    def cover(self):
         self.isCovered = True
+
     """Indique les cellules que couvre le routeur"""
     def coverSelfCell(self):
         for cellule in self.coveredCell:
-            cellule.Cover()
+            cellule.cover()
+
     """Diminue le potentiel d'un routeur si une des cellules qu'il couvre est déjà couverte"""
     def resetPotiental(self):
         for cellule in self.coveredCell:
             if(cellule.isCovered==True):
                 self.potential -= 1
+
     """Initialise le potentiel d'un routeur au nombre de cellule qu'il peut couvrir"""
     def setPotential(self):
         self.potential = len(self.coveredCell)
+
     def getWeight(self):
         return sefl.potential
+
     def getCellType(char):
         if(char == '#'):
             return "WALL"

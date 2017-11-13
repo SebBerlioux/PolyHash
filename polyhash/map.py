@@ -3,6 +3,7 @@ __all__ = ['Map'] # ajouter dans cette liste tous les symboles 'importables'
 
 from PIL import Image
 from .cell import Cell
+from .polyhmodel import Bitmap
 class Map:
     """
     Classe representant une carte
@@ -27,6 +28,7 @@ class Map:
         self.routerCosts = 0
         self.budget = 0
         self.firstCell = Cell()
+        self.asciiMap = []
         if(fileName != None):
             self.initFromFile(fileName)
 
@@ -54,10 +56,12 @@ class Map:
                 ThirdLine = line.split()
                 self.firstCell = Cell(int(ThirdLine[0]),int(ThirdLine[1]))
             if(lineCounter>2):
+                self.asciiMap.append([])
                 self.map.append([])
-                LINE = line.split()
+                LINE = line
                 columnCounter = 0
                 for char in LINE:
+                    self.asciiMap[len(self.asciiMap)-1].append(char)
                     self.map[len(self.map)-1].append(Cell(len(self.map)-1,columnCounter,Cell.getCellType(char)))
                     columnCounter += 1
             lineCounter +=1
@@ -74,32 +78,69 @@ class Map:
         else:
             return "MAP NOT INITIALISED"
     """Indique si des coordonnées d'une cellule sont hors de la carte"""
-    def outOfMap(x,y):
+    def outOfMap(self,x,y):
         if(y<0 or x<0 or x>=self.rowsNumber or y>=self.columnsNumber):
-            return False
-        else:
             return True
+        else:
+            return False
     """Détermine si une cellule cell est couverte par un routeur positionné à la cellule cellRouter"""
     def isCoveredBy(self,cell,cellRouter):
         """SUBSQUARING AREA"""
-        if(cell.cellType == "WALL" || cell.cellType == "VOID"):
+        if(cell.cellType == "WALL" or cell.cellType == "VOID"):
             return False
-        for i in range(cell.x,cellRouter.x+1):
-            for j in range(cell.y,cellRouter.y+1):
-                if(not outOfMap(j,i)):
-                    if(map[j][i].cellType=="WALL"):
+        stepColumn = 1
+        if(cell.column<cellRouter.column):
+            stepColumn = -1
+        for i in range(cellRouter.column,cell.column+stepColumn,stepColumn):
+            stepRow = 1
+            if(cell.row<cellRouter.row):
+                stepRow = -1
+            for j in range(cellRouter.row,cell.row+stepRow,stepRow):
+                if(self.outOfMap(j,i)==False):
+                    if(self.map[j][i].cellType=="WALL"):
                         return False
         return True
     """Détermine les cellules que couvre un routeur"""
     def buildArea(self,cellRouter):
         for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius+1):
             for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius+1):
-                if(not outOfMap(j,i)):
-                    if(map[j][i].cellType != "WALL" and map[j][i].cellType != "VOID" and map[j][i].cellType != "NONE"):
-                        if(self.isCoveredBy(map[j][i],cellRouter)==True):
-                            cellRouter.coveredCell.append(map[j][i])
+                if(self.outOfMap(j,i)==False):
+                    if(self.map[j][i].cellType == "FLOOR"):
+                        if(self.isCoveredBy(self.map[j][i],cellRouter)==True):
+                            cellRouter.coveredCell.append(self.map[j][i])
         cellRouter.setPotential()
-    """A FAIRE"""
     """Calul tout les routeurs de la carte"""
     """Chaque routeur doit être mit dans une liste triée par leurs potentiels"""
-    #def analyseMap():
+    def analyseMap(self):
+        routeurList = []
+        for j in range(len(self.map)):
+            for i in range(len(self.map[j])):
+                if(self.map[j][i].cellType == "FLOOR"):
+                    routeurList.append(routeurList)
+                    self.buildArea(self.map[j][i])
+
+    def potentialToChar(self,potential):
+        maxPotential = (self.routerRangeRadius*2)*(self.routerRangeRadius*2)
+        temp = (chr(ord('A')+int(potential/maxPotential/24)))
+        return temp
+    def saveASCIIMap(self):
+            charDictionnary = dict()
+            charDictionnary['-']=(125,125,125)
+            charDictionnary['#']=(0,0,0)
+            charDictionnary['.']=(255,255,255)
+            charDictionnary['E']=(255,0,0)
+
+            #recuperation du tableau de caractere representant la carte
+            MAP = self.asciiMap
+            #creation de la bitmap
+            temp = Bitmap('X',(6,6,6),charDictionnary,MAP)
+            #sauvegarde la bitmap en out.png
+            temp.save()
+    def saveASCIIMapAsFile(self,fileName):
+        file = open(fileName,'w')
+        for line in self.asciiMap:
+            temp = ""
+            for char in line:
+                temp += char
+            file.write(temp)
+        file.close()

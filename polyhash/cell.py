@@ -37,9 +37,11 @@ class Cell:
 
     """Diminue le potentiel d'un routeur si une des cellules qu'il couvre est déjà couverte"""
     def resetPotiental(self):
+        lastPotential = self.potential
         for cellule in self.coveredCell:
             if(cellule.isCovered==True):
                 self.potential -= 1
+        return lastPotential
 
     """Initialise le potentiel d'un routeur au nombre de cellule qu'il peut couvrir"""
     def setPotential(self):

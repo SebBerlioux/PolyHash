@@ -25,6 +25,7 @@ class Map:
     def __init__(self,fileName = None):
         """ Constructeur de la classe """
         self.routerList = RouterList()
+        self.routerTrash = RouterList()
         self.source = ""
         self.isInit = False
         self.map = list()
@@ -167,8 +168,14 @@ class Map:
             for router in self.routerList[i]:
                 if isFirst == True:
                     isFirst = False
+                    placedRouter.append(router)
+                    router.isRouter = True
+                    router.coverSelfCell()
                 else:
-                    router.resetPotiental()
-                placedRouter.append(router)
-                router.isRouter = True
-                router.coverSelfCell()
+                    temp = router.resetPotiental()
+                    if(temp == router.potential):
+                        placedRouter.append(router)
+                        router.isRouter = True
+                        router.coverSelfCell()
+                    else:
+                        routerTrash.insert(router.potential, router)

@@ -25,8 +25,10 @@ class Cell:
         self.coveredCell = []
         self.potential = 0
         self.isRouter = False
-        """Path indiquand d'où vient le routeur"""
+        """Path indiquant d'où vient le routeur"""
         self.backRoad = None
+        """Path indiquant les routeurs suivants"""
+        self.nextRoad = []
 
     """Indique qu'une cellule est déjà couverte"""
     def cover(self):

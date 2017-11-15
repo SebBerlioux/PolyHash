@@ -1,17 +1,26 @@
 class Path:
-    def __init__(entrance=(0,0),exit=(0,0)):
-        self.a = entrance
-        self.b = exit
+    """Entré et sortie doivent être une cell"""
+    def __init__(entrance=None,exit=None,backBoneCost = 0):
+        self.begin = entrance
+        self.end = exit
         self.fiberCase = []
+        self.backBoneCost = backBoneCost
+
+    """Fonction renvoyant la distance du chemin"""
+    """Utilise vite fait pythagore ça economisera des ressources"""
+    def getDistance():
+        return 0
+    """The fuck is that ?"""
+    """Si c'est pour tracer le chemin, il faudrait qu'elle soit appelée depuis le Constructeur du Paht"""
     def way():
         if self.a[0] == self.b[0]:
             for i in range(self.a[1],self.b[1]):
                 self.fiberCase += [(self.a[0], i)]
         else:
             for i in range ():
-
+    """On ne peut pas utilisé la carte comme ça du coup on passe juste le prix du backbone"""
     def cost():
-        return len(self.fiberCase * mapIn.backBoneCosts)
+        return len(self.fiberCase) * self.backboneCosts
 
 '''
 ALGORITHMES DE BRESENHAM

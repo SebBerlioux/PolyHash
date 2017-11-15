@@ -8,7 +8,7 @@ from PIL import Image
 from .cell import Cell
 from .RouterList import RouterList
 from .polyhmodel import Bitmap
-
+from .backbone_road import Paht
 
 class Map:
     """
@@ -166,16 +166,26 @@ class Map:
         isFirst = True
         for i in range(0, len(self.routerList.listPotential)):
             for router in self.routerList[i]:
+                AddActualRouter = False
+                """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
                 if isFirst == True:
                     isFirst = False
-                    placedRouter.append(router)
-                    router.isRouter = True
-                    router.coverSelfCell()
-                else:
+                """Recalcul du potentiel"""
+                if isFirst == False:
                     temp = router.resetPotiental()
-                    if(temp == router.potential):
+                if(temp == router.potential):
+                    AddActualRouter = True
+                if AddActualRouter == True:
+                    """Récupération du coût du routeur et de son chemin"
+                        Ajout si il n'y pas de dépassement de
+                        Et recalcul du buget"""
+                    pathToRouter = Path(self.backbone,router,self.backBoneCosts)
+                    if(self.budget - self.routerCosts - pathToRouter.cost()>0:)
                         placedRouter.append(router)
                         router.isRouter = True
                         router.coverSelfCell()
-                    else:
-                        routerTrash.insert(router.potential, router)
+                    """Création du chemin backbone et router"""
+                        router.backRoad = pathToRouter
+                        self.budget = self.budget - self.routerCosts - pathToRouter.cost()
+                else:
+                    routerTrash.insert(router.potential, router)

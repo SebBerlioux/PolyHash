@@ -1,26 +1,46 @@
 class Path:
     """Entré et sortie doivent être une cell"""
-    def __init__(entrance=None,exit=None,backBoneCost = 0):
-        self.begin = entrance
-        self.end = exit
+    #def __init__(self,beg=None,end=None,backBoneCost = 0):
+    def __init__(self,beg=(0,0),end=(0,0),backBoneCost = 0):
+
+        #self.beg = (beg.column, self.beg.row)
+        #self.end = (self.end.column,self.end.row)
+
+        self.beg = beg
+        self.end = end
         self.fiberCase = []
         self.backBoneCost = backBoneCost
+        print("initialisation ok   " + str(self.beg) + str(self.end) + "   " + str(self.backBoneCost))
 
     """Fonction renvoyant la distance du chemin"""
     """Utilise vite fait pythagore ça economisera des ressources"""
-    def getDistance():
+
+    def getDistance(self):
         return 0
-    """The fuck is that ?"""
-    """Si c'est pour tracer le chemin, il faudrait qu'elle soit appelée depuis le Constructeur du Paht"""
-    def way():
-        if self.a[0] == self.b[0]:
-            for i in range(self.a[1],self.b[1]):
-                self.fiberCase += [(self.a[0], i)]
+    """Si c'est pour tracer le chemin, il faudrait qu'elle soit appelée depuis le Constructeur du Path"""
+
+    def way(self):
+        if self.beg[0] == self.end[0]:
+            for i in range(self.beg[1],self.end[1]):
+                self.fiberCase += [(self.beg[0], i)]
         else:
-            for i in range ():
-    """On ne peut pas utilisé la carte comme ça du coup on passe juste le prix du backbone"""
+            coef = (self.end[1] - self.beg[1]) / (self.end[0] - self.beg[0])
+            for x in range (self.beg[0], self.end[0]):
+                y = int(coef * x + 0.5 - self.beg[0])
+                self.fiberCase += [(x,y)]
+                if ((len(self.fiberCase) > 1) and (y-self.fiberCase[-2][1] > 1)):
+                    step = y - self.fiberCase[-2][1]
+                    print(step)
+                    for i in range(1,step):
+                        self.fiberCase = self.fiberCase[:-1] + [(x,y-step+i)] + [self.fiberCase[-1]]
+        return self.fiberCase
+
     def cost():
         return len(self.fiberCase) * self.backboneCosts
+
+
+
+
 
 '''
 ALGORITHMES DE BRESENHAM

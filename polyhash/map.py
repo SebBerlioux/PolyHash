@@ -8,7 +8,7 @@ from PIL import Image
 from .cell import Cell
 from .RouterList import RouterList
 from .polyhmodel import Bitmap
-from .backbone_road import Paht
+from .backbone_road import Path
 
 class Map:
     """
@@ -180,11 +180,10 @@ class Map:
                         Ajout si il n'y pas de dépassement de
                         Et recalcul du buget"""
                     pathToRouter = Path(self.backbone,router,self.backBoneCosts)
-                    if(self.budget - self.routerCosts - pathToRouter.cost()>0:)
+                    if(self.budget - self.routerCosts - pathToRouter.cost()>0):
                         placedRouter.append(router)
                         router.isRouter = True
                         router.coverSelfCell()
-                    """Création du chemin backbone et router"""
                         router.backRoad = pathToRouter
                         self.budget = self.budget - self.routerCosts - pathToRouter.cost()
                 else:

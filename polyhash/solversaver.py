@@ -17,6 +17,18 @@ class SolverSaver:
 
     def writeInFile(self):
         """Fonction qui écrit la solution dans le fichier"""
+        nbRouter = len(self.placedRouter)
+        routerStr = str(nbRouter)+'\n'
+        fiberStr = ""
+        nbFiber = 0
+        out = ""
+        for router in self.placedRouter:
+            nbFiber += len(router.backRoad.fiberCase)
+            routerStr += '('+str(router.row)+','+str(router.column)+')\n'
+            for case in router.backRoad.fiberCase:
+                fiberStr +='('+str(case[0])+','+str(case[1])+')\n'
+        fiberStr = str(nbFiber)+fiberStr+"\n"
+        out = fiberStr+routerStr
         file = open(self.fileName, "w")
-        
+        file.write(out)
         file.close()

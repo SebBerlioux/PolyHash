@@ -3,12 +3,10 @@ from polyhash import *
 def main():
     #récupère la carte
     mapIn = Map(getArgument()[1])
-    a = (15,7)
-    b = (30,30)
-    test = Path(a, b, 2)
-    test.way()
-    print(test.fiberCase)
-    for case in test.fiberCase:
+
+    test2 = Path(mapIn.map[20][20], mapIn.map[25][20], 2)
+    print(test2.fiberCase)
+    for case in test2.fiberCase:
         mapIn.asciiMap[case[1]][case[0]] = 'E'
     #mapIn.analyseMap()
     mapIn.saveASCIIMap()

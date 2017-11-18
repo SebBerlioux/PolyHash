@@ -18,48 +18,87 @@ class Path:
     def getDistance(self):
         return 0
     """Construit le chemin fibré"""
+    """
     def way(self):
         inc = 1
-        """Ligne verticale"""
         if self.beg[0] == self.end[0]:
-            """Variable d'incrémentation"""
+
             if(self.beg[1]>self.end[1]):
                 inc = -1
             for i in range(self.beg[1],self.end[1],inc):
                 self.fiberCase += [(self.beg[0], i)]
             return None
-        """Ligne horizontale"""
         if self.beg[1] == self.end[1]:
-            """Variable d'incrémentation"""
+
             if(self.beg[0]>self.end[0]):
                 inc = -1
             for i in range(self.beg[0],self.end[0],inc):
                 self.fiberCase += [(i,self.beg[1])]
             return None
         else:
-            """Est ce vraiment utile ?"""
+
             swap=False
-            if(self.end[1]<self.beg[1]):
+            if( self.end[1]<self.beg[1]):
                 swap=True
                 self.end,self.beg = self.beg,self.end
-            """Coefficient directeur de la droite"""
             coef = (self.end[1] - self.beg[1]) / (self.end[0] - self.beg[0])
-            """Ajout de la première case"""
             self.fiberCase += [self.beg]
-            """Variable d'incrémentation"""
             if(self.beg[0]>self.end[0]):
                 inc = -1
             decalage = self.beg[1]+(self.beg[0]*coef*-1)
-            for x in range (self.beg[0]+1, self.end[0],inc):
-                y = int(coef * x + 0.5+decalage)
+            for x in range (self.beg[0]+1, self.end[0]+1,inc):
+                y = int(coef * x + decalage)
                 self.fiberCase += [(x,y)]
-                if ((len(self.fiberCase) > 1) and (y-self.fiberCase[-2][1] > 1)):
+                if ((len(self.fiberCase) > 1) and (abs(y-self.fiberCase[-2][1]) > 1)):
                     step = y - self.fiberCase[-2][1]
                     for i in range(1,step):
                         self.fiberCase = self.fiberCase[:-1] + [(x,y-step+i)] + [self.fiberCase[-1]]
             if(swap==True):
+                self.fiberCase.reverse()
                 self.end,self.beg=self.beg,self.end
         return self.fiberCase
+    """
+    """Construction du chemin fibré"""
+    """Algorithme inspiré de l'Algorithme de bresenham"""
+    def way(self):
+        X = self.beg[0]
+        Y = self.beg[1]
+        deltaX = self.end[0]-self.beg[0]
+        deltaY = self.end[1]-self.beg[1]
+        incX = 1
+        incY = 1
+        """Choix de l'incrément en fonction du sens de la droite"""
+        if(deltaX<0):
+            incX = -1
+        if(deltaY<0):
+            incY = -1
+        deltaX = abs(deltaX)
+        deltaY = abs(deltaY)
+        """Placement du premier point"""
+        self.fiberCase += [self.beg]
+        """Si la pente en X est plus grande que la pente en Y"""
+        if(deltaX>deltaY):
+            erreur = deltaX/2
+            for i in range(1,deltaX+1):
+                """On incrémente selon les X"""
+                X+= incX
+                erreur += deltaY
+                """Si la différence est supérieur à l'avancement des X"""
+                if(erreur>=deltaX):
+                    """On retire le delta"""
+                    erreur -= deltaX
+                    """Et on incrémente en Y"""
+                    Y += incY
+                self.fiberCase += [(X,Y)]
+        else:
+            erreur = deltaY/2
+            for i in range(1,deltaY+1):
+                Y += incY
+                erreur += deltaX
+                if(erreur >= deltaY):
+                    erreur -= deltaY
+                    X += incX
+                self.fiberCase += [(X,Y)]
     def cost(self):
         return len(self.fiberCase) * self.backBoneCost
 

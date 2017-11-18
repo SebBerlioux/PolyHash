@@ -164,8 +164,8 @@ class Map:
         charDictionnary['-']=(125,125,125)
         charDictionnary['#']=(0,0,0)
         charDictionnary['.']=(255,255,255)
-        charDictionnary['B']=(200,40,150)
-        charDictionnary['E']=(255,0,0)
+        charDictionnary['B']=(65, 99, 155)
+        charDictionnary['E']=(65, 155, 103)
         charDictionnary['R']=(0,0,255)
         #recuperation du tableau de caractere representant la carte
         MAP = self.asciiMap
@@ -213,10 +213,12 @@ class Map:
                         self.budget = self.budget - self.routerCosts - pathToRouter.cost()
                     if(self.record == True):
                         RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
-                        self.save()
                 else:
                     self.routerTrash.insert(router)
-                if(self.record==True):
-                    file = open("SAVE/trace.txt",'w')
-                    file.write(RouterTrace)
-                    file.close()
+        self.routerList = self.routerTrash
+        self.routerList.listPotential.sort(reverse=True)
+        if(self.record==True):
+            self.save()
+            file = open("SAVE/trace.txt",'w')
+            file.write(RouterTrace)
+            file.close()

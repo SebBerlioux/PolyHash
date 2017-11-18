@@ -33,7 +33,15 @@ class Cell:
     """Indique qu'une cellule est déjà couverte"""
     def cover(self):
         self.isCovered = True
-
+    """Renvoit le nombre de routeur suivant"""
+    def getNbNexCell(self):
+        return len(nextRoad)
+    """Renvoit le routeur suivant à l'index index"""
+    def nextCell(self,index):
+        return nextRoad[index].endCell
+    """Renvoit le routeur précédent"""
+    def backCell(self):
+        return backRoad.beginCell
     """Indique les cellules que couvre le routeur"""
     def coverSelfCell(self):
         for cellule in self.coveredCell:
@@ -53,7 +61,7 @@ class Cell:
 
     def getWeight(self):
         return sefl.potential
-
+    """Renvoit le type de cellule en fonction du caractère"""
     def getCellType(char):
         if(char == '#'):
             return "WALL"

@@ -9,6 +9,10 @@ from .cell import Cell
 from .RouterList import RouterList
 from .polyhmodel import Bitmap
 from .backbone_road import Path
+from multiprocessing import Process,Value
+
+
+
 
 class Map:
     """
@@ -24,6 +28,7 @@ class Map:
     """
     def __init__(self,fileName = None):
         """ Constructeur de la classe """
+        self.notComputeRouter = []
         self.routerList = RouterList()
         self.routerTrash = RouterList()
         self.source = ""
@@ -37,6 +42,7 @@ class Map:
         self.budget = 0
         self.firstCell = Cell()
         self.asciiMap = []
+        self.placedRouter = []
         if(fileName != None):
             self.initFromFile(fileName)
 
@@ -57,9 +63,9 @@ class Map:
                 self.routerRangeRadius = int(firstLine[2])
             if(lineCounter == 1):
                 SecondLine = line.split()
-                self.backBoneCosts = SecondLine[0]
-                self.routerCosts = SecondLine[1]
-                self.budget = SecondLine[2]
+                self.backBoneCosts = int(SecondLine[0])
+                self.routerCosts = int(SecondLine[1])
+                self.budget = int(SecondLine[2])
             if(lineCounter == 2):
                 ThirdLine = line.split()
                 self.firstCell = Cell(int(ThirdLine[0]),int(ThirdLine[1]))
@@ -69,8 +75,11 @@ class Map:
                 LINE = line
                 columnCounter = 0
                 for char in LINE:
+                    temp = Cell(len(self.map)-1,columnCounter,Cell.getCellType(char))
                     self.asciiMap[len(self.asciiMap)-1].append(char)
-                    self.map[len(self.map)-1].append(Cell(len(self.map)-1,columnCounter,Cell.getCellType(char)))
+                    self.map[len(self.map)-1].append(temp)
+                    if(temp.cellType == "FLOOR"):
+                        self.notComputeRouter.append(temp)
                     columnCounter += 1
             lineCounter +=1
         self.isInit = True
@@ -124,11 +133,11 @@ class Map:
     """Calul tout les routeurs de la carte"""
     """Chaque routeur doit être mit dans une liste triée par leurs potentiels"""
     def analyseMap(self):
-        for j in range(len(self.map)):
-            for i in range(len(self.map[j])):
-                if(self.map[j][i].cellType == "FLOOR"):
-                    self.buildArea(self.map[j][i])
-                    self.routerList.insert(self.map[j][i].potential, self.map[j][i])
+        for router in self.notComputeRouter:
+            self.buildArea(router)
+            self.routerList.insert(router)
+            self.asciiMap[router.row][router.column] = "B"
+        self.routerList.listPotential.sort(reverse=True)
 
     def potentialToChar(self,potential):
         """Transforme le potentiel en un caractère"""
@@ -142,7 +151,9 @@ class Map:
         charDictionnary['-']=(125,125,125)
         charDictionnary['#']=(0,0,0)
         charDictionnary['.']=(255,255,255)
+        charDictionnary['B']=(200,40,150)
         charDictionnary['E']=(255,0,0)
+        charDictionnary['R']=(0,0,255)
         #recuperation du tableau de caractere representant la carte
         MAP = self.asciiMap
         #creation de la bitmap
@@ -162,9 +173,8 @@ class Map:
 
     def placeRouter(self):
         """Méthode de placement de routeur intelligente"""
-        placedRouter = []
         isFirst = True
-        for i in range(0, len(self.routerList.listPotential)):
+        for i in self.routerList.listPotential:
             for router in self.routerList[i]:
                 AddActualRouter = False
                 """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
@@ -179,12 +189,12 @@ class Map:
                     """Récupération du coût du routeur et de son chemin"
                         Ajout si il n'y pas de dépassement de
                         Et recalcul du buget"""
-                    pathToRouter = Path(self.backbone,router,self.backBoneCosts)
+                    pathToRouter = Path(self.firstCell,router,self.backBoneCosts)
                     if(self.budget - self.routerCosts - pathToRouter.cost()>0):
-                        placedRouter.append(router)
+                        self.placedRouter.append(router)
                         router.isRouter = True
                         router.coverSelfCell()
                         router.backRoad = pathToRouter
                         self.budget = self.budget - self.routerCosts - pathToRouter.cost()
                 else:
-                    routerTrash.insert(router.potential, router)
+                    self.routerTrash.insert(router)

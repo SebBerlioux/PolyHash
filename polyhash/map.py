@@ -10,8 +10,7 @@ from .RouterList import RouterList
 from .polyhmodel import Bitmap
 from .backbone_road import Path
 from multiprocessing import Process,Value
-
-
+import os, errno
 
 
 class Map:
@@ -26,7 +25,7 @@ class Map:
     - map -> matrice des caractere composant la carte
     - isInit -> si la carte est initialise avec un fichier
     """
-    def __init__(self,fileName = None):
+    def __init__(self,fileName = None,record = False):
         """ Constructeur de la classe """
         self.notComputeRouter = []
         self.routerList = RouterList()
@@ -46,6 +45,14 @@ class Map:
         if(fileName != None):
             self.initFromFile(fileName)
 
+        self.fichier = "SAVE/image_"
+        self.nbSave = 0
+        self.extension = ".png"
+        self.record = record
+        if(self.record == True):
+            directory = "./SAVE"
+            if not os.path.exists(directory):
+                os.makedirs(directory)
     def initFromFile(self,file):
         """ Initialise la carte avec un fichier """
         self.source = file
@@ -145,7 +152,13 @@ class Map:
         temp = (chr(ord('A')+int(potential/maxPotential/24)))
         return temp
 
-    def saveASCIIMap(self):
+    def save(self):
+        for router in self.placedRouter:
+            for case in router.backRoad.fiberCase:
+                self.asciiMap[case[1]][case[0]] = 'E'
+            self.asciiMap[router.row][router.column] = 'B'
+        self.saveASCIIMap(self.fichier+str(self.nbSave)+self.extension)
+    def saveASCIIMap(self,fileName="out.png"):
         """Sauvegarde la carte en Bitmap"""
         charDictionnary = dict()
         charDictionnary['-']=(125,125,125)
@@ -159,7 +172,8 @@ class Map:
         #creation de la bitmap
         temp = Bitmap('X',(6,6,6),charDictionnary,MAP)
         #sauvegarde la bitmap en out.png
-        temp.save()
+        temp.save(fileName)
+        self.nbSave +=1
 
     def saveASCIIMapAsFile(self,fileName):
         """Sauvegarde la carte sous forme de texte"""
@@ -173,6 +187,7 @@ class Map:
 
     def placeRouter(self):
         """Méthode de placement de routeur intelligente"""
+        RouterTrace = ""
         isFirst = True
         for i in self.routerList.listPotential:
             for router in self.routerList[i]:
@@ -196,5 +211,12 @@ class Map:
                         router.coverSelfCell()
                         router.backRoad = pathToRouter
                         self.budget = self.budget - self.routerCosts - pathToRouter.cost()
+                    if(self.record == True):
+                        RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
+                        self.save()
                 else:
                     self.routerTrash.insert(router)
+                if(self.record==True):
+                    file = open("SAVE/trace.txt",'w')
+                    file.write(RouterTrace)
+                    file.close()

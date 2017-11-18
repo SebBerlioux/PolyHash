@@ -38,7 +38,7 @@ class RouterList:
                     self.listPotential[i] = potential
                     return
             self.listPotential.append(potential)
-
+    
     def __getitem__(self, key):
         """Surcharge de l'accesseur d'attribue"""
         return self.dict[key]

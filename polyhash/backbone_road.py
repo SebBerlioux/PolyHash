@@ -74,8 +74,8 @@ class Path:
             incY = -1
         deltaX = abs(deltaX)
         deltaY = abs(deltaY)
-        """Placement du premier point"""
-        self.fiberCase += [self.beg]
+        """Placement du premier point, pas nécessaire"""
+        #self.fiberCase += [self.beg]
         """Si la pente en X est plus grande que la pente en Y"""
         if(deltaX>deltaY):
             erreur = deltaX/2

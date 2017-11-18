@@ -24,10 +24,10 @@ class SolverSaver:
         out = ""
         for router in self.placedRouter:
             nbFiber += len(router.backRoad.fiberCase)
-            routerStr += '('+str(router.row)+','+str(router.column)+')\n'
+            routerStr += str(router.row)+' '+str(router.column)+'\n'
             for case in router.backRoad.fiberCase:
-                fiberStr +='('+str(case[0])+','+str(case[1])+')\n'
-        fiberStr = str(nbFiber)+fiberStr+"\n"
+                fiberStr +=str(case[0])+' '+str(case[1])+'\n'
+        fiberStr = str(nbFiber)+"\n"+fiberStr+"\n"
         out = fiberStr+routerStr
         file = open(self.fileName, "w")
         file.write(out)

@@ -38,7 +38,11 @@ class RouterList:
                     self.listPotential[i] = potential
                     return
             self.listPotential.append(potential)
-    
+
     def __getitem__(self, key):
         """Surcharge de l'accesseur d'attribue"""
         return self.dict[key]
+
+    def delete(self, key):
+        """Fonction de suppression d'une key dans le dico"""
+        del self.dict[key]

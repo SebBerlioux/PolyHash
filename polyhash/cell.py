@@ -25,6 +25,8 @@ class Cell:
         self.coveredCell = []
         self.potential = 0
         self.isRouter = False
+        """Si la case est déjà fibré"""
+        self.isFiber =False
         """Path indiquant d'où vient le routeur"""
         self.backRoad = None
         """Path indiquant les routeurs suivants"""

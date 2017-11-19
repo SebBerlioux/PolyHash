@@ -1,6 +1,6 @@
 class Path:
     """Entré et sortie doivent être une cell"""
-    def __init__(self,beg=None,end=None,backBoneCost = 0):
+    def __init__(self,beg=None,end=None,backBoneCost = 0,map=None):
         """Déclaration des cellules"""
         self.beginCell = beg
         self.endCell = end
@@ -11,7 +11,7 @@ class Path:
         self.fiberCase = []
         """coût de une cellule de fibre"""
         self.backBoneCost = backBoneCost
-        self.way()
+        self.way(map)
 
     """Fonction renvoyant la distance du chemin"""
     """Utilise vite fait pythagore ça economisera des ressources"""
@@ -60,7 +60,7 @@ class Path:
     """
     """Construction du chemin fibré"""
     """Algorithme inspiré de l'Algorithme de bresenham"""
-    def way(self):
+    def way(self,map):
         X = self.beg[0]
         Y = self.beg[1]
         deltaX = self.end[0]-self.beg[0]
@@ -89,7 +89,9 @@ class Path:
                     erreur -= deltaX
                     """Et on incrémente en Y"""
                     Y += incY
-                self.fiberCase += [(X,Y)]
+                if(map.map[Y][X].isFiber==False):
+                    self.fiberCase += [(X,Y)]
+                    map.map[Y][X].isFiber = True
         else:
             erreur = deltaY/2
             for i in range(1,deltaY+1):
@@ -98,7 +100,9 @@ class Path:
                 if(erreur >= deltaY):
                     erreur -= deltaY
                     X += incX
-                self.fiberCase += [(X,Y)]
+                if(map.map[Y][X].isFiber==False):
+                    self.fiberCase += [(X,Y)]
+                    map.map[Y][X].isFiber = True
     def cost(self):
         return len(self.fiberCase) * self.backBoneCost
 

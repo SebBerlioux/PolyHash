@@ -207,7 +207,7 @@ class Map:
                         """Récupération du coût du routeur et de son chemin"
                             Ajout si il n'y pas de dépassement de
                             Et recalcul du buget"""
-                        pathToRouter = Path(self.firstCell,router,self.backBoneCosts)
+                        pathToRouter = Path(self.firstCell,router,self.backBoneCosts,self)
                         if(self.budget - self.routerCosts - pathToRouter.cost()>0):
                             self.placedRouter.append(router)
                             router.isRouter = True

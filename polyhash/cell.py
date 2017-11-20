@@ -7,7 +7,7 @@ __all__ = ['Cell']
 
 class Cell:
     """
-    Classe définissant une cellule caractérisé par:
+    Classe définissant une cellule caractérisée par:
     - sa coordonnée en x
     - sa coordonnée en y
     - son type

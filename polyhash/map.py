@@ -191,8 +191,10 @@ class Map:
         RouterTrace = ""
         lastPotential = 0
         isFirst = True
-        for i in self.routerList.listPotential:
-            for router in self.routerList[i]:
+        temp = 0
+        routerNode = self.routerList.head
+        while routerNode != None:
+            for router in routerNode.cellList:
                 AddActualRouter = False
                 """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
                 if isFirst == True:
@@ -208,7 +210,8 @@ class Map:
                         Et recalcul du budget"""
                     pathToRouter = Path(self.firstCell,router,self.backBoneCosts)
                     if(self.budget - self.routerCosts - pathToRouter.cost()>0):
-                        print(i, self.budget)
+                        print(self.budget)
+                        self.save()
                         self.placedRouter.append(router)
                         router.isRouter = True
                         router.coverSelfCell()
@@ -222,10 +225,9 @@ class Map:
                 else:
                     """Si le potentiel du routeur est diminué, on le ré-insert dans routerList
                         afin qu'il puisse être placé si besoin plus tard"""
+                    print("DEPLCEMENT")
                     self.routerList.insert(router)
-            lastPotential = i
-        print("lastPotential = ", lastPotential)
-        self.routerList.delete(lastPotential)
+                    print("FIN DU DEPLACEMENT")
         if(self.record==True):
             self.save()
             file = open("SAVE/trace.txt",'w')

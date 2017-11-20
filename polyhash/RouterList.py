@@ -21,9 +21,8 @@ class RouterList:
         if potential in self.dict:
             self.dict[potential] += [cell]
         else:
-            #self.insertPotential(potential)
             self.dict[potential] = [cell]
-        self.dict[potential]
+
 
     def insertPotential(self, potential):
         """Méthode qui ajoute les potentiels dans une liste triée"""
@@ -38,7 +37,7 @@ class RouterList:
                     self.listPotential[i] = potential
                     return
             self.listPotential.append(potential)
-    
+
     def __getitem__(self, key):
         """Surcharge de l'accesseur d'attribue"""
         return self.dict[key]

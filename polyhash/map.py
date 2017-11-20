@@ -145,13 +145,7 @@ class Map:
             self.buildArea(router)
             self.routerList.insert(router)
             self.asciiMap[router.row][router.column] = "B"
-        self.routerList.listPotential.sort()
-
-    def potentialToChar(self,potential):
-        """Transforme le potentiel en un caractère"""
-        maxPotential = (self.routerRangeRadius*2)*(self.routerRangeRadius*2)
-        temp = (chr(ord('A')+int(potential/maxPotential/24)))
-        return temp
+        self.routerList.listPotential.sort(reverse=True)
 
     def save(self):
         for router in self.placedRouter:
@@ -185,22 +179,33 @@ class Map:
                 temp += char
             file.write(temp)
         file.close()
-
+    """Indique si la carte est totalement fibré"""
+    def isNotFull(self):
+        out = False
+        for cell in self.notComputeRouter:
+            if(cell.isCovered==False):
+                out = True
+            else:
+                self.notComputeRouter.remove(cell)
+        return out
     def placeRouter(self):
         """Méthode de placement de routeur intelligente"""
         RouterTrace = ""
         isFirst = True
-        while(self.budget > 0 and len(self.routerList.listPotential)>0):
+        temp = 0
+        while(self.budget > 0 and len(self.routerList.listPotential)>0 and self.isNotFull()==True):
             self.nbPass += 1
             for i in self.routerList.listPotential:
                 for router in self.routerList[i]:
+                    print(router.row,router.column)
                     AddActualRouter = False
                     """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
                     if isFirst == True:
                         isFirst = False
                     """Recalcul du potentiel"""
                     if isFirst == False:
-                        temp = router.resetPotiental(self.nbPass)
+                        temp = router.resetPotiental()
+
                     if(temp == router.potential):
                         AddActualRouter = True
                     if AddActualRouter == True:
@@ -217,13 +222,14 @@ class Map:
                         if(self.record == True):
                             RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
                     else:
-                        self.routerTrash.insert(router)
+                        pass
+                        #self.routerList.insert(router)
             """Indique que toutes les cases ne sont pas recouvertes afin de re-effectuer le calcul"""
             #for cell in self.notComputeRouter:
             #    cell.isCovered = False
-            self.routerList = self.routerTrash
-            self.routerList.listPotential.sort()
-            self.routerTrash = RouterList()
+            #self.routerList = self.routerTrash
+            #self.routerList.listPotential.sort(reverse=True)
+            #self.routerTrash = RouterList()
         if(self.record==True):
             self.save()
             file = open("SAVE/trace.txt",'w')

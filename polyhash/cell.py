@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __all__ = ['Cell']
-
+from math import sqrt
 
 
 class Cell:
@@ -20,7 +20,7 @@ class Cell:
         self.row = row
         self.column = column
         self.cellType = cellType
-        self.isCovered = 0
+        self.isCovered = False
         """Liste des cellules couvertes pour les cellules routeur"""
         self.coveredCell = []
         self.potential = 0
@@ -31,10 +31,11 @@ class Cell:
         self.backRoad = None
         """Path indiquant les routeurs suivants"""
         self.nextRoad = []
-
+        self.bestDistance = None
+        self.bestRouter = None
     """Indique qu'une cellule est déjà couverte"""
     def cover(self):
-        self.isCovered += 1
+        self.isCovered = True
     """Renvoit le nombre de routeur suivant"""
     def getNbNexCell(self):
         return len(nextRoad)
@@ -50,19 +51,35 @@ class Cell:
             cellule.cover()
 
     """Diminue le potentiel d'un routeur si une des cellules qu'il couvre est déjà couverte"""
-    def resetPotiental(self,nbPass):
+    def resetPotiental(self):
         lastPotential = self.potential
         self.potential = 0
         for cellule in self.coveredCell:
-            self.potential += cellule.isCovered
+            if(cellule.isCovered!=True):
+                self.potential += 1
         return lastPotential
 
     """Initialise le potentiel d'un routeur au nombre de cellule qu'il peut couvrir"""
     def setPotential(self):
         self.potential = len(self.coveredCell)
+    """Donne la distance entre la cellule est une autre"""
+    def getDistance(self,cellule):
+        return sqrt((self.row-cellule.row)**2 + (self.column-cellule.column)**2)
+    """Indique de quelle cellule, la cellule actuelle est le plus proche"""
+    def setBestProch(self,placedRouter):
+        best = None
+        prochRouter = None
+        for router in placedRouter:
+            temp = self.getDistance(router)
+            if(best == None):
+                best = temp
+                prochRouter = router
+            elif(temp<best):
+                best = temp
+                prochRouter = router
+        self.bestDistance = best
+        self.bestRouter = prochRouter
 
-    def getWeight(self):
-        return sefl.potential
     """Renvoit le type de cellule en fonction du caractère"""
     def getCellType(char):
         if(char == '#'):

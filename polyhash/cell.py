@@ -20,7 +20,7 @@ class Cell:
         self.row = row
         self.column = column
         self.cellType = cellType
-        self.isCovered = False
+        self.isCovered = 0
         """Liste des cellules couvertes pour les cellules routeur"""
         self.coveredCell = []
         self.potential = 0
@@ -34,7 +34,7 @@ class Cell:
 
     """Indique qu'une cellule est déjà couverte"""
     def cover(self):
-        self.isCovered = True
+        self.isCovered += 1
     """Renvoit le nombre de routeur suivant"""
     def getNbNexCell(self):
         return len(nextRoad)
@@ -50,11 +50,11 @@ class Cell:
             cellule.cover()
 
     """Diminue le potentiel d'un routeur si une des cellules qu'il couvre est déjà couverte"""
-    def resetPotiental(self):
+    def resetPotiental(self,nbPass):
         lastPotential = self.potential
+        self.potential = 0
         for cellule in self.coveredCell:
-            if(cellule.isCovered==True):
-                self.potential -= 1
+            self.potential += cellule.isCovered
         return lastPotential
 
     """Initialise le potentiel d'un routeur au nombre de cellule qu'il peut couvrir"""

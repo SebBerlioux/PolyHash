@@ -58,5 +58,8 @@ class Path:
                 if(map.map[Y][X].isFiber==False):
                     self.fiberCase += [(X,Y)]
                     map.map[Y][X].isFiber = True
+    def cancel(self,map):
+        for case in self.fiberCase:
+            map.map[case[1]][case[0]].isFiber = False
     def cost(self):
         return len(self.fiberCase) * self.backBoneCost

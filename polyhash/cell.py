@@ -33,6 +33,7 @@ class Cell:
         self.nextRoad = []
         self.bestDistance = None
         self.bestRouter = None
+        self.nbCoveredCell = 0
     """Indique qu'une cellule est déjà couverte"""
     def cover(self):
         self.isCovered = True
@@ -54,14 +55,19 @@ class Cell:
     def resetPotiental(self):
         lastPotential = self.potential
         self.potential = 0
+        self.nbCoveredCell = 0
         for cellule in self.coveredCell:
             if(cellule.isCovered!=True):
                 self.potential += 1
+                self.nbCoveredCell += 1
+            else:
+                self.potential -= 1
         return lastPotential
 
     """Initialise le potentiel d'un routeur au nombre de cellule qu'il peut couvrir"""
     def setPotential(self):
         self.potential = len(self.coveredCell)
+        self.nbCoveredCell = self.potential
     """Donne la distance entre la cellule est une autre"""
     def getDistance(self,cellule):
         return sqrt((self.row-cellule.row)**2 + (self.column-cellule.column)**2)

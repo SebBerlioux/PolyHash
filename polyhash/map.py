@@ -25,6 +25,7 @@ class Map:
     - map -> matrice des caractere composant la carte
     - isInit -> si la carte est initialise avec un fichier
     """
+
     def __init__(self,fileName = None,record = False):
         """ Constructeur de la classe """
         self.notComputeRouter = []
@@ -45,7 +46,6 @@ class Map:
         self.nbPass = 0
         if(fileName != None):
             self.initFromFile(fileName)
-
         self.fichier = "SAVE/image_"
         self.nbSave = 0
         self.extension = ".png"
@@ -54,6 +54,7 @@ class Map:
             directory = "./SAVE"
             if not os.path.exists(directory):
                 os.makedirs(directory)
+
     def initFromFile(self,file):
         """ Initialise la carte avec un fichier """
         self.source = file
@@ -103,15 +104,15 @@ class Map:
         else:
             return "MAP NOT INITIALISED"
 
-    """Indique si des coordonnées d'une cellule sont hors de la carte"""
     def outOfMap(self,x,y):
+        """Indique si des coordonnées d'une cellule sont hors de la carte"""
         if(y<0 or x<0 or x>=self.rowsNumber or y>=self.columnsNumber):
             return True
         else:
             return False
 
-    """Détermine si une cellule cell est couverte par un routeur positionné à la cellule cellRouter"""
     def isCoveredBy(self,cell,cellRouter):
+        """Détermine si une cellule cell est couverte par un routeur positionné à la cellule cellRouter"""
         """SUBSQUARING AREA"""
         if(cell.cellType == "WALL" or cell.cellType == "VOID"):
             return False
@@ -128,8 +129,8 @@ class Map:
                         return False
         return True
 
-    """Détermine les cellules que couvre un routeur"""
     def buildArea(self,cellRouter):
+        """Détermine les cellules que couvre un routeur"""
         for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius):
             for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius):
                 if(self.outOfMap(j,i)==False):
@@ -138,9 +139,11 @@ class Map:
                             cellRouter.coveredCell.append(self.map[j][i])
         cellRouter.setPotential()
 
-    """Calul tout les routeurs de la carte"""
-    """Chaque routeur doit être mit dans une liste triée par leurs potentiels"""
     def analyseMap(self):
+        """
+        Calul tout les routeurs de la carte
+        Chaque routeur doit être mit dans une liste triée par leurs potentiels
+        """
         for router in self.notComputeRouter:
             self.buildArea(router)
             self.routerList.insert(router)
@@ -148,11 +151,13 @@ class Map:
         self.routerList.listPotential.sort(reverse=True)
 
     def save(self):
+        """Fonction qui sauvegarde l'itération actuelle de la carte en image"""
         for router in self.placedRouter:
             for case in router.backRoad.fiberCase:
                 self.asciiMap[case[1]][case[0]] = 'E'
             self.asciiMap[router.row][router.column] = 'B'
         self.saveASCIIMap(self.fichier+str(self.nbSave)+self.extension)
+
     def saveASCIIMap(self,fileName="out.png"):
         """Sauvegarde la carte en Bitmap"""
         charDictionnary = dict()
@@ -179,8 +184,9 @@ class Map:
                 temp += char
             file.write(temp)
         file.close()
-    """Indique si la carte est totalement fibré"""
+
     def isNotFull(self):
+        """Indique si la carte est totalement fibré"""
         out = False
         for cell in self.notComputeRouter:
             if(cell.isCovered==False):
@@ -188,51 +194,53 @@ class Map:
             #else:
             #    self.notComputeRouter.remove(cell)
         return out
+
     def placeRouter(self):
         """Méthode de placement de routeur intelligente"""
         RouterTrace = ""
+        lastPotential = 0
         isFirst = True
         temp = 0
-        PLACEDCELL = [self.firstCell]
-        while(self.budget > 0 and len(self.routerList.listPotential)>0 and self.isNotFull()==True):
-            self.nbPass += 1
-            for i in self.routerList.listPotential:
-                for router in self.routerList[i]:
-                    AddActualRouter = False
-                    """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
-                    if isFirst == True:
-                        isFirst = False
-                    """Recalcul du potentiel"""
-                    if isFirst == False:
-                        temp = router.resetPotiental()
-
-                    if(temp == router.potential):
-                        AddActualRouter = True
-                    if AddActualRouter == True:
-                        """Récupération du coût du routeur et de son chemin"
-                            Ajout si il n'y pas de dépassement de
-                            Et recalcul du buget"""
-                        if(router.isCovered == False):
-                            router.setBestProch(PLACEDCELL)
-                            pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
-                            rendement = (1000 * router.nbCoveredCell)-(self.routerCosts + pathToRouter.cost())
-                            if(self.budget - self.routerCosts - pathToRouter.cost()>0 and rendement >=0):
-                                self.placedRouter.append(router)
-                                PLACEDCELL.append(router)
-                                router.isRouter = True
-                                router.coverSelfCell()
-                                router.backRoad = pathToRouter
-                                self.budget = self.budget - self.routerCosts - pathToRouter.cost()
-                            else:
-                                pathToRouter.cancel(self)
-                            if(self.record == True):
-                                RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
+        routerNode = self.routerList.head
+        while routerNode != None:
+            for router in routerNode.cellList:
+                AddActualRouter = False
+                """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
+                if isFirst == True:
+                    isFirst = False
+                """Recalcul du potentiel"""
+                if isFirst == False:
+                    temp = router.resetPotiental()
+                if(temp == router.potential):
+                    AddActualRouter = True
+                if AddActualRouter == True:
+                    """
+                    Récupération du coût du routeur et de son chemin
+                    Ajout si il n'y pas de dépassement du budget
+                    Et recalcul du budget
+                    """
+                    pathToRouter = Path(self.firstCell,router,self.backBoneCosts)
+                    if(self.budget - self.routerCosts - pathToRouter.cost()>0):
+                        print(self.budget)
+                        self.save()
+                        self.placedRouter.append(router)
+                        router.isRouter = True
+                        router.coverSelfCell()
+                        router.backRoad = pathToRouter
+                        self.budget = self.budget - self.routerCosts - pathToRouter.cost()
                     else:
-                        self.routerTrash.insert(router)
-            """Indique que toutes les cases ne sont pas recouvertes afin de re-effectuer le calcul"""
-            self.routerList = self.routerTrash
-            self.routerList.listPotential.sort(reverse=True)
-            self.routerTrash = RouterList()
+                        print("budget dépassé")
+                        break
+                    if(self.record == True):
+                        RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
+                else:
+                    """
+                    Si le potentiel du routeur est diminué, on le ré-insert dans routerList
+                    afin qu'il puisse être placé si besoin plus tard
+                    """
+                    print("DEPLCEMENT")
+                    self.routerList.insert(router)
+                    print("FIN DU DEPLACEMENT")
         if(self.record==True):
             self.save()
             file = open("SAVE/trace.txt",'w')

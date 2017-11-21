@@ -1,6 +1,14 @@
 class Path:
-    """Entré et sortie doivent être une cell"""
+    """
+    Classe représentant un chemin fibré représenté par :
+    - beg -> la cellule de début
+    - end -> la cellule de fin
+    - backBoneCost -> le coût du chemin
+    - map -> la carte
+    """
+
     def __init__(self,beg=None,end=None,backBoneCost = 0,map=None):
+        """Constructeur de la classe"""
         """Déclaration des cellules"""
         self.beginCell = beg
         self.endCell = end
@@ -13,9 +21,11 @@ class Path:
         self.backBoneCost = backBoneCost
         self.way(map)
 
-    """Construction du chemin fibré"""
-    """Algorithme inspiré de l'Algorithme de bresenham"""
     def way(self,map):
+        """
+        Construction du chemin fibré
+        Algorithme inspiré de l'Algorithme de bresenham
+        """
         X = self.beg[0]
         Y = self.beg[1]
         deltaX = self.end[0]-self.beg[0]
@@ -58,8 +68,12 @@ class Path:
                 if(map.map[Y][X].isFiber==False):
                     self.fiberCase += [(X,Y)]
                     map.map[Y][X].isFiber = True
+
     def cancel(self,map):
+        """Méthode qui retire les cellules fibrées"""
         for case in self.fiberCase:
             map.map[case[1]][case[0]].isFiber = False
+
     def cost(self):
+        """Méthode qui calcul le coût d'un chemin"""
         return len(self.fiberCase) * self.backBoneCost

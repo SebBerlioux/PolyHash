@@ -34,28 +34,31 @@ class Cell:
         self.bestDistance = None
         self.bestRouter = None
         self.nbCoveredCell = 0
-
         self.bufferIndex = 0
 
-    """Indique qu'une cellule est déjà couverte"""
     def cover(self):
+        """Indique qu'une cellule est déjà couverte"""
         self.isCovered = True
-    """Renvoit le nombre de routeur suivant"""
+
     def getNbNexCell(self):
+        """Renvoit le nombre de routeur suivant"""
         return len(nextRoad)
-    """Renvoit le routeur suivant à l'index index"""
+
     def nextCell(self,index):
+        """Renvoit le routeur suivant à l'index index"""
         return nextRoad[index].endCell
-    """Renvoit le routeur précédent"""
+
     def backCell(self):
+        """Renvoit le routeur précédent"""
         return backRoad.beginCell
-    """Indique les cellules que couvre le routeur"""
+
     def coverSelfCell(self):
+        """Indique les cellules que couvre le routeur"""
         for cellule in self.coveredCell:
             cellule.cover()
 
-    """Diminue le potentiel d'un routeur si une des cellules qu'il couvre est déjà couverte"""
     def resetPotiental(self):
+        """Diminue le potentiel d'un routeur si une des cellules qu'il couvre est déjà couverte"""
         lastPotential = self.potential
         self.potential = 0
         self.nbCoveredCell = 0
@@ -67,15 +70,17 @@ class Cell:
                 self.potential -= 1
         return lastPotential
 
-    """Initialise le potentiel d'un routeur au nombre de cellule qu'il peut couvrir"""
     def setPotential(self):
+        """Initialise le potentiel d'un routeur au nombre de cellule qu'il peut couvrir"""
         self.potential = len(self.coveredCell)
         self.nbCoveredCell = self.potential
-    """Donne la distance entre la cellule est une autre"""
+
     def getDistance(self,cellule):
+        """Donne la distance entre la cellule est une autre"""
         return sqrt((self.row-cellule.row)**2 + (self.column-cellule.column)**2)
-    """Indique de quelle cellule, la cellule actuelle est le plus proche"""
+
     def setBestProch(self,placedRouter):
+        """Indique de quelle cellule, la cellule actuelle est le plus proche"""
         best = None
         prochRouter = None
         for i in range(self.bufferIndex,len(placedRouter)):
@@ -91,8 +96,8 @@ class Cell:
         self.bestRouter = prochRouter
         self.bufferIndex = len(placedRouter)
 
-    """Renvoit le type de cellule en fonction du caractère"""
     def getCellType(char):
+        """Renvoit le type de cellule en fonction du caractère"""
         if(char == '#'):
             return "WALL"
         if(char == '.'):

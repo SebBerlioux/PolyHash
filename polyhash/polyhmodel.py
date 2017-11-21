@@ -16,6 +16,7 @@ class Bitmap:
     - rgbDctionnary -> dictionnaire associant un caractere a une couleur
     - charMap -> matrice de caractere
     """
+
     def __init__(self,noneArg=None,noneColor=None,rgbDictionnary=None,charMap=None):
         """ Constructeur de la classe """
         if(charMap!=None):

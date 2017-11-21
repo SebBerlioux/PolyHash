@@ -193,6 +193,7 @@ class Map:
         RouterTrace = ""
         isFirst = True
         temp = 0
+        PLACEDCELL = [self.firstCell]
         while(self.budget > 0 and len(self.routerList.listPotential)>0 and self.isNotFull()==True):
             self.nbPass += 1
             for i in self.routerList.listPotential:
@@ -212,10 +213,12 @@ class Map:
                             Ajout si il n'y pas de dépassement de
                             Et recalcul du buget"""
                         if(router.isCovered == False):
-                            pathToRouter = Path(self.firstCell,router,self.backBoneCosts,self)
+                            router.setBestProch(PLACEDCELL)
+                            pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
                             rendement = (1000 * router.nbCoveredCell)-(self.routerCosts + pathToRouter.cost())
                             if(self.budget - self.routerCosts - pathToRouter.cost()>0 and rendement >=0):
                                 self.placedRouter.append(router)
+                                PLACEDCELL.append(router)
                                 router.isRouter = True
                                 router.coverSelfCell()
                                 router.backRoad = pathToRouter

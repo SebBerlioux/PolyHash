@@ -34,6 +34,9 @@ class Cell:
         self.bestDistance = None
         self.bestRouter = None
         self.nbCoveredCell = 0
+
+        self.bufferIndex = 0
+
     """Indique qu'une cellule est déjà couverte"""
     def cover(self):
         self.isCovered = True
@@ -75,7 +78,8 @@ class Cell:
     def setBestProch(self,placedRouter):
         best = None
         prochRouter = None
-        for router in placedRouter:
+        for i in range(self.bufferIndex,len(placedRouter)):
+            router = placedRouter[i]
             temp = self.getDistance(router)
             if(best == None):
                 best = temp
@@ -85,6 +89,7 @@ class Cell:
                 prochRouter = router
         self.bestDistance = best
         self.bestRouter = prochRouter
+        self.bufferIndex = len(placedRouter)
 
     """Renvoit le type de cellule en fonction du caractère"""
     def getCellType(char):

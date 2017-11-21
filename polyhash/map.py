@@ -138,6 +138,22 @@ class Map:
                         if(self.isCoveredBy(self.map[j][i],cellRouter)==True):
                             cellRouter.coveredCell.append(self.map[j][i])
         cellRouter.setPotential()
+        """Test du potentiel le plus optimum lorsqu'il touche un mur"""
+        if(cellRouter.potential==(self.routerRangeRadius*2)**2):
+            row = cellRouter.row-self.routerRangeRadius-1
+            for j in range(1,3):
+                for i in range(cellRouter.column-self.routerRangeRadius-1,cellRouter.column + self.routerRangeRadius+1):
+                    if(self.map[row][i].cellType=="WALL"):
+                        cellRouter.potential+=1
+
+                row = cellRouter.row+self.routerRangeRadius+1
+            column = cellRouter.column-self.routerRangeRadius-1
+            for j in range(1,3):
+                for i in range(cellRouter.row-self.routerRangeRadius-1,cellRouter.row + self.routerRangeRadius+1):
+                    if(self.map[i][column].cellType=="WALL"):
+                        cellRouter.potential+=1
+
+                column = cellRouter.column+self.routerRangeRadius+1
 
     def analyseMap(self):
         """

@@ -127,7 +127,6 @@ class Map:
                 if(self.outOfMap(j,i)==False):
                     if(self.map[j][i].cellType=="WALL"):
                         return False
-        cell.nbRecover += 1
         return True
 
     def buildArea(self,cellRouter):
@@ -202,55 +201,46 @@ class Map:
         isFirst = True
         temp = 0
         PLACEDCELL = [self.firstCell]
-        while(self.budget > 0 and len(self.routerList.listPotential)>0 and self.isNotFull()==True):
-            self.nbPass += 1
-            for i in self.routerList.listPotential:
-                for router in self.routerList[i]:
-                    router.setBestProch(PLACEDCELL)
-                self.routerList[i].sort(key=lambda Cell: Cell.bestDistance)
-                while(len(self.routerList[i])>0):
-                    router = self.routerList[i][0]
-                    AddActualRouter = False
-                    """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
-                    if isFirst == True:
-                        isFirst = False
-                    """Recalcul du potentiel"""
-                    if isFirst == False:
-                        temp = router.resetPotiental()
-                    if(temp == router.potential):
-                        AddActualRouter = True
-                    if AddActualRouter == True:
-                        """
-                        Récupération du coût du routeur et de son chemin
-                        Ajout si il n'y pas de dépassement de
-                        Et recalcul du buget
-                        """
-                        if(router.isCovered == False):
-                            router.setBestProch(PLACEDCELL)
-                            pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
-                            rendement = (1000 * router.nbCoveredCell)-(self.routerCosts + pathToRouter.cost())
-                            if(self.budget - self.routerCosts - pathToRouter.cost()>0 and rendement >=0):
-                                self.placedRouter.append(router)
-                                PLACEDCELL.append(router)
-                                router.isRouter = True
-                                router.coverSelfCell()
-                                router.backRoad = pathToRouter
-                                self.budget = self.budget - self.routerCosts - pathToRouter.cost()
-                            else:
-                                pathToRouter.cancel(self)
-                            if(self.record == True):
-                                RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
-                    else:
-                        self.routerTrash.insert(router)
-                    self.routerList[i].pop(0)
-                    for router in self.routerList[i]:
+        routerNode = self.routerList.head
+        while routerNode != None:
+            for router in routerNode.cellList:
+                AddActualRouter = False
+                """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
+                if isFirst == True:
+                    isFirst = False
+                """Recalcul du potentiel"""
+                if isFirst == False:
+                    temp = router.resetPotiental()
+                if(temp == router.potential):
+                    AddActualRouter = True
+                if AddActualRouter == True:
+                    """
+                    Récupération du coût du routeur et de son chemin
+                    Ajout si il n'y pas de dépassement de
+                    Et recalcul du buget
+                    """
+                    if(router.isCovered == False):
                         router.setBestProch(PLACEDCELL)
-                    self.routerList[i].sort(key=lambda Cell: Cell.bestDistance)
-            """Indique que toutes les cases ne sont pas recouvertes afin de re-effectuer le calcul"""
-            self.routerList = self.routerTrash
-            self.routerList.listPotential.sort(reverse=True)
-            self.routerTrash = RouterList()
+                        pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
+                        rendement = (1000 * router.nbCoveredCell)-(self.routerCosts + pathToRouter.cost())
+                        if(self.budget - self.routerCosts - pathToRouter.cost()>0 and rendement >=0):
+                            self.placedRouter.append(router)
+                            PLACEDCELL.append(router)
+                            router.isRouter = True
+                            router.coverSelfCell()
+                            router.backRoad = pathToRouter
+                            self.budget = self.budget - self.routerCosts - pathToRouter.cost()
+                        else:
+                            pathToRouter.cancel(self)
+                        if(self.record == True):
+                            RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
+                else:
+                    """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
+                    self.routerList.insert(router)
+            """On passe au routeur suivant dans la liste"""
+            routerNode = routerNode.next
         if(self.record==True):
+            """On sauvegarde la solution dans le fichier"""
             self.save()
             file = open("SAVE/trace.txt",'w')
             file.write(RouterTrace)

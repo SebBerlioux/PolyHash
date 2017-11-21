@@ -1,4 +1,4 @@
-# exclude __pycache__ directories
+# excluded files
 
-polyhash/__pycache__/*
-polyhash/polyutils/__pycache__/*
+polyhash/__pycache__/
+polyhash/polyhutils/__pycache__/

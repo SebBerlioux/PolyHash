@@ -123,20 +123,33 @@ class Map:
             stepRow = 1
             if(cell.row<cellRouter.row):
                 stepRow = -1
-            for j in range(cellRouter.row,cell.row+stepRow,stepRow):
+            bloqueur = cell.row+stepRow
+            for j in range(cellRouter.row,bloqueur,stepRow):
                 if(self.outOfMap(j,i)==False):
                     if(self.map[j][i].cellType=="WALL"):
                         return False
+                        bloqueur=j
         return True
 
     def buildArea(self,cellRouter):
         """Détermine les cellules que couvre un routeur"""
-        for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius):
-            for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius):
+        for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius+1):
+            for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius+1):
                 if(self.outOfMap(j,i)==False):
                     if(self.map[j][i].cellType == "FLOOR"):
                         if(self.isCoveredBy(self.map[j][i],cellRouter)==True):
                             cellRouter.coveredCell.append(self.map[j][i])
+        """        for incRow in range(-1,2,2):
+                    for incColumn in range(-1,2,2):
+                        bloqueur = cellRouter.row + self.routerRangeRadius*incRow
+                        for i in range(cellRouter.column,cellRouter.column + self.routerRangeRadius*incColumn,incColumn):
+                            for j in range(cellRouter.row,bloqueur,incRow):
+                                if(self.outOfMap(j,i)==False):
+                                    if(self.map[j][i].cellType == "FLOOR"):
+                                        if(self.isCoveredBy(self.map[j][i],cellRouter)==True):
+                                            cellRouter.coveredCell.append(self.map[j][i])
+                                    else:
+                                        bloqueur = j"""
         cellRouter.setPotential()
         """Test du potentiel le plus optimum lorsqu'il touche un mur"""
         if(cellRouter.potential==(self.routerRangeRadius*2)**2):

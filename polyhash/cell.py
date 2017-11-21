@@ -36,6 +36,7 @@ class Cell:
         self.nbCoveredCell = 0
         self.bufferIndex = 0
 
+        self.bonusPotentiel = 0
 
 
     def cover(self):
@@ -68,8 +69,7 @@ class Cell:
             if(cellule.isCovered!=True):
                 self.potential += 1
                 self.nbCoveredCell += 1
-            else:
-                self.potential -= 1
+        self.potential += self.bonusPotentiel
         return lastPotential
 
     def setPotential(self):

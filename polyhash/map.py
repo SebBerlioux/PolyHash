@@ -145,6 +145,8 @@ class Map:
                 for i in range(cellRouter.column-self.routerRangeRadius-1,cellRouter.column + self.routerRangeRadius+1):
                     if(self.map[row][i].cellType=="WALL"):
                         cellRouter.potential+=1
+                        cellRouter.bonusPotentiel+=1
+                        return
 
                 row = cellRouter.row+self.routerRangeRadius+1
             column = cellRouter.column-self.routerRangeRadius-1
@@ -152,7 +154,8 @@ class Map:
                 for i in range(cellRouter.row-self.routerRangeRadius-1,cellRouter.row + self.routerRangeRadius+1):
                     if(self.map[i][column].cellType=="WALL"):
                         cellRouter.potential+=1
-
+                        cellRouter.bonusPotentiel+=1
+                        return
                 column = cellRouter.column+self.routerRangeRadius+1
 
     def analyseMap(self):
@@ -203,13 +206,12 @@ class Map:
 
     def isNotFull(self):
         """Indique si la carte est totalement fibré"""
-        out = False
         for cell in self.notComputeRouter:
             if(cell.isCovered==False):
-                out = True
-            #else:
-            #    self.notComputeRouter.remove(cell)
-        return out
+                return True
+            else:
+                self.notComputeRouter.remove(cell)
+        return False
 
     def placeRouter(self):
         """Méthode de placement de routeur intelligente"""
@@ -218,7 +220,7 @@ class Map:
         temp = 0
         PLACEDCELL = [self.firstCell]
         routerNode = self.routerList.head
-        while routerNode != None:
+        while routerNode != None and self.isNotFull()==True:
             for router in routerNode.cellList:
                 AddActualRouter = False
                 """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""

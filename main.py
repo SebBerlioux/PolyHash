@@ -1,4 +1,3 @@
-
 from polyhash import *
 def main():
     """ADRESSE DU JUGE"""

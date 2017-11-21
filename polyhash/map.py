@@ -127,6 +127,7 @@ class Map:
                 if(self.outOfMap(j,i)==False):
                     if(self.map[j][i].cellType=="WALL"):
                         return False
+        cell.nbRecover += 1
         return True
 
     def buildArea(self,cellRouter):
@@ -205,6 +206,10 @@ class Map:
             self.nbPass += 1
             for i in self.routerList.listPotential:
                 for router in self.routerList[i]:
+                    router.setBestProch(PLACEDCELL)
+                self.routerList[i].sort(key=lambda Cell: Cell.bestDistance)
+                while(len(self.routerList[i])>0):
+                    router = self.routerList[i][0]
                     AddActualRouter = False
                     """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
                     if isFirst == True:
@@ -237,6 +242,10 @@ class Map:
                                 RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
                     else:
                         self.routerTrash.insert(router)
+                    self.routerList[i].pop(0)
+                    for router in self.routerList[i]:
+                        router.setBestProch(PLACEDCELL)
+                    self.routerList[i].sort(key=lambda Cell: Cell.bestDistance)
             """Indique que toutes les cases ne sont pas recouvertes afin de re-effectuer le calcul"""
             self.routerList = self.routerTrash
             self.routerList.listPotential.sort(reverse=True)

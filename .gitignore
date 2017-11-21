@@ -1,0 +1,4 @@
+# excluded files
+
+polyhash/__pycache__/
+polyhash/polyhutils/__pycache__/

@@ -36,6 +36,8 @@ class Cell:
         self.nbCoveredCell = 0
         self.bufferIndex = 0
 
+
+
     def cover(self):
         """Indique qu'une cellule est déjà couverte"""
         self.isCovered = True
@@ -92,8 +94,10 @@ class Cell:
             elif(temp<best):
                 best = temp
                 prochRouter = router
-        self.bestDistance = best
-        self.bestRouter = prochRouter
+        if(best != None):
+            self.bestDistance = best
+        if(prochRouter!=None):
+            self.bestRouter = prochRouter
         self.bufferIndex = len(placedRouter)
 
     def getCellType(char):

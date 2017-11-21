@@ -3,6 +3,9 @@ from polyhash import *
 def main():
     """ADRESSE DU JUGE"""
     """http://pitools.polytech.univ-nantes.fr/polyhash/app/index"""
+    saveLocation = "SOLUTION/solution.out"
+    if(len(getArgument())>= 3):
+        saveLocation = getArgument()[2]
     CLOCK = PersonnalClock()
     print("............LECTURE DU FICHIER............")
     mapIn = Map(getArgument()[1],True)
@@ -27,7 +30,7 @@ def main():
     print("Budget restant : ",mapIn.budget)
     print("Nombre de recalcul : ",mapIn.nbPass)
     print("............SAUVEGARDE DE LA SOLUTION............")
-    solution = SolverSaver("solution.out",mapIn.placedRouter)
+    solution = SolverSaver(saveLocation,mapIn.placedRouter)
     solution.writeInFile()
     print("SAUVEGARDE DE LA CARTE EN IMAGE\n")
     mapIn.saveASCIIMap()

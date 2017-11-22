@@ -16,6 +16,7 @@ def main():
     mapIn.analyseMap()
     timeELapsed = CLOCK.getElapsedTime()
     CLOCK.end()
+    print("NOMBRE DE CELLULE TOTALE : ",len(mapIn.notComputeRouter))
     print("DUREE DE L'ANALYSE : ",str(timeELapsed)," SECONDES\n")
     print("............DEBUT DU PLACEMENT............")
     CLOCK.begin()

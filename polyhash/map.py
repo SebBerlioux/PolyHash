@@ -123,64 +123,98 @@ class Map:
             stepRow = 1
             if(cell.row<cellRouter.row):
                 stepRow = -1
-            bloqueur = cell.row+stepRow
-            for j in range(cellRouter.row,bloqueur,stepRow):
+            for j in range(cellRouter.row,cell.row+stepRow,stepRow):
                 if(self.outOfMap(j,i)==False):
                     if(self.map[j][i].cellType=="WALL"):
                         return False
-                        bloqueur=j
         return True
 
     def buildArea(self,cellRouter):
         """Détermine les cellules que couvre un routeur"""
-        for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius+1):
+        """for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius+1):
             for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius+1):
                 if(self.outOfMap(j,i)==False):
                     if(self.map[j][i].cellType == "FLOOR"):
                         if(self.isCoveredBy(self.map[j][i],cellRouter)==True):
-                            cellRouter.coveredCell.append(self.map[j][i])
-        """        for incRow in range(-1,2,2):
-                    for incColumn in range(-1,2,2):
-                        bloqueur = cellRouter.row + self.routerRangeRadius*incRow
-                        for i in range(cellRouter.column,cellRouter.column + self.routerRangeRadius*incColumn,incColumn):
-                            for j in range(cellRouter.row,bloqueur,incRow):
-                                if(self.outOfMap(j,i)==False):
-                                    if(self.map[j][i].cellType == "FLOOR"):
-                                        if(self.isCoveredBy(self.map[j][i],cellRouter)==True):
-                                            cellRouter.coveredCell.append(self.map[j][i])
-                                    else:
-                                        bloqueur = j"""
+                            cellRouter.coveredCell.append(self.map[j][i])"""
+        """Test par block"""
+        """Haut gauche"""
+        centralBlock = cellRouter.column - self.routerRangeRadius -1
+        block = cellRouter.column - self.routerRangeRadius -1
+        for row in range(cellRouter.row,cellRouter.row - self.routerRangeRadius-1,-1):
+            for column in range(cellRouter.column,block,-1):
+                if(self.outOfMap(row,column)==False):
+                    if(self.map[row][column].cellType == "FLOOR"):
+                        cellRouter.coveredCell.append(self.map[row][column])
+                    else:
+                        if(row == cellRouter.row):
+                            centralBlock = column
+                        block = column
+                        break
+                else:
+                    block = column
+                    break
+        """BAS GAUCHE"""
+        block = centralBlock
+        """Rajouter +1 à row pour plus de logique"""
+        for row in range(cellRouter.row,cellRouter.row + self.routerRangeRadius+1):
+            for column in range(cellRouter.column,block,-1):
+                if(self.outOfMap(row,column)==False):
+                    if(self.map[row][column].cellType == "FLOOR"):
+                        cellRouter.coveredCell.append(self.map[row][column])
+                    else:
+                        block = column
+                        break
+                else:
+                    block = column
+                    break
+        """Haut droit"""
+        centralBlock = cellRouter.column + self.routerRangeRadius + 1
+        block = cellRouter.column + self.routerRangeRadius +1
+        for row in range(cellRouter.row,cellRouter.row - self.routerRangeRadius-1,-1):
+            for column in range(cellRouter.column+1,block):
+                if(self.outOfMap(row,column)==False):
+                    if(self.map[row][column].cellType == "FLOOR"):
+                        cellRouter.coveredCell.append(self.map[row][column])
+                    else:
+                        if(row == cellRouter.row):
+                            centralBlock = column
+                        block = column
+                        break
+                else:
+                    block = column
+                    break
+        """Bas droit"""
+        block = centralBlock
+        for row in range(cellRouter.row+1,cellRouter.row + self.routerRangeRadius+1):
+            for column in range(cellRouter.column+1,block):
+                if(self.outOfMap(row,column)==False):
+                    if(self.map[row][column].cellType == "FLOOR"):
+                        cellRouter.coveredCell.append(self.map[row][column])
+                    else:
+                        block = column
+                        break
+                else:
+                    block = column
+                    break
         cellRouter.setPotential()
-        """Test du potentiel le plus optimum lorsqu'il touche un mur"""
-        if(cellRouter.potential==(self.routerRangeRadius*2)**2):
-            row = cellRouter.row-self.routerRangeRadius-1
-            for j in range(1,3):
-                for i in range(cellRouter.column-self.routerRangeRadius-1,cellRouter.column + self.routerRangeRadius+1):
-                    if(self.map[row][i].cellType=="WALL"):
-                        cellRouter.potential+=1
-                        cellRouter.bonusPotentiel+=1
-                        return
 
-                row = cellRouter.row+self.routerRangeRadius+1
-            column = cellRouter.column-self.routerRangeRadius-1
-            for j in range(1,3):
-                for i in range(cellRouter.row-self.routerRangeRadius-1,cellRouter.row + self.routerRangeRadius+1):
-                    if(self.map[i][column].cellType=="WALL"):
-                        cellRouter.potential+=1
-                        cellRouter.bonusPotentiel+=1
-                        return
-                column = cellRouter.column+self.routerRangeRadius+1
+
 
     def analyseMap(self):
         """
         Calul tout les routeurs de la carte
         Chaque routeur doit être mit dans une liste triée par leurs potentiels
         """
+        best = 0
         for router in self.notComputeRouter:
             self.buildArea(router)
+            if(router.potential>best):
+                best = router.potential
             self.routerList.insert(router)
             self.asciiMap[router.row][router.column] = "B"
         self.routerList.listPotential.sort(reverse=True)
+        print("BEST POTENTIEL : ",best)
 
     def save(self):
         """Fonction qui sauvegarde l'itération actuelle de la carte en image"""

@@ -13,5 +13,5 @@ Description des caractère ASCII de la carte :
 Le fichier `README.md` est écrit en **Markdown**
 et permet de soigner la _mise en forme_.
 
-L'équipe : Nicolas Cuadros , Sebastien Berlioux, Simon Bessenay, Alexandre Nonon
+L'équipe : Nicolas Cuadros , Sebastien Berlioux, Simon Bessenay, Alexandre Nonnon
 ===========

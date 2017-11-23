@@ -45,7 +45,6 @@ class Map:
         if(fileName != None):
             self.initFromFile(fileName)
         self.fichier = "SAVE/image_"
-        self.nbSave = 0
         self.extension = ".png"
         self.record = record
         if(self.record == True):
@@ -143,7 +142,10 @@ class Map:
                                     else:
                                         centralVertTop = row
                                     BREAK = True
+                                if(cellRouter.nearestWall >abs(block-cellRouter.column)):
+                                    cellRouter.nearestWall = abs(block-cellRouter.column)
                                 block = column
+
                                 break
                         else:
                             block = column
@@ -165,6 +167,7 @@ class Map:
                 best = router.potential
             self.routerList.insert(router)
             self.asciiMap[router.row][router.column] = "B"
+
         self.routerList.listPotential.sort(reverse=True)
         print("BEST POTENTIEL : ",best)
 
@@ -174,7 +177,7 @@ class Map:
             for case in router.backRoad.fiberCase:
                 self.asciiMap[case[1]][case[0]] = 'E'
             self.asciiMap[router.row][router.column] = 'B'
-        self.saveASCIIMap(self.fichier+str(self.nbSave)+self.extension)
+        self.saveASCIIMap(self.fichier+self.extension)
 
     def saveASCIIMap(self,fileName="out.png"):
         """Sauvegarde la carte en Bitmap"""
@@ -191,7 +194,6 @@ class Map:
         temp = Bitmap('X',(6,6,6),charDictionnary,MAP)
         #sauvegarde la bitmap en out.png
         temp.save(fileName)
-        self.nbSave +=1
 
     def isNotFull(self):
         """Indique si la carte est totalement fibré"""
@@ -206,8 +208,10 @@ class Map:
         isFirst = True
         temp = 0
         PLACEDCELL = [self.firstCell]
+
         routerNode = self.routerList.head
-        while routerNode != None and self.isNotFull()==True:
+        while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
+            #routerNode.cellList.sort(key= lambda Cell:Cell.subPotential)
             for router in routerNode.cellList:
                 AddActualRouter = False
                 """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
@@ -236,10 +240,7 @@ class Map:
                             #router.backRoad = pathToRouter
                             #self.budget = self.budget - self.routerCosts - pathToRouter.cost()
                         else:
-                            #pathToRouter.cancel(self)
-                            pass
-                        if(self.record == True):
-                            RouterTrace += "("+str(self.nbSave)+") : ("+str(router.row)+","+str(router.column)+") link to ("+str(self.firstCell.row)+","+str(self.firstCell.column)+")\n"
+                            pathToRouter.cancel(self)
                 else:
                     """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
                     self.routerList.insert(router)

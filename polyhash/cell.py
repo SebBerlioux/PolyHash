@@ -35,13 +35,16 @@ class Cell:
         self.bestRouter = None
         self.nbCoveredCell = 0
         self.bufferIndex = 0
-
-        self.bonusPotentiel = 0
+        self.subPotential = None
 
     def cover(self):
         """Indique qu'une cellule est déjà couverte"""
         self.isCovered = True
-
+    def isHelpFUll(self):
+        for router in self.coveredCell:
+            if(router.isCovered==False):
+                return True
+        return False
     def getNbNexCell(self):
         """Renvoit le nombre de routeur suivant"""
         return len(nextRoad)
@@ -68,7 +71,6 @@ class Cell:
             if(cellule.isCovered!=True):
                 self.potential += 1
                 self.nbCoveredCell += 1
-        self.potential += self.bonusPotentiel
         return lastPotential
 
     def setPotential(self):

@@ -272,6 +272,7 @@ class Map:
                         print("creation chemin", cmpt)
                         cmpt += 1
                         cost[i] = i.getDistance(router)
+                        print("cost = ", cost[i])
                         pathToRouter = Path(router, i, self.backBoneCosts, self)
                         i.backRoad = pathToRouter
                         self.budget -= pathToRouter.cost()

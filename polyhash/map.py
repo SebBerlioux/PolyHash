@@ -10,7 +10,7 @@ from .routerlist import RouterList
 from .polyhmodel import Bitmap
 from .backbone_road import Path
 from multiprocessing import Process,Value
-import os, errno
+import os, errno, math
 
 
 class Map:
@@ -250,3 +250,24 @@ class Map:
             file = open("SAVE/trace.txt",'w')
             file.write(RouterTrace)
             file.close()
+
+    def pathFinder(self):
+        """Méthode qui trouve un arbre couvrant minimum reliant tous les routeurs grâce à l'algorithme de Prim"""
+        cost = {}
+        pred = {}
+        queue = []
+        cmpt = 1
+        for router in self.placedRouter:
+            cost[router] = math.inf
+            pred[router] = None
+            queue.append(router)
+        cost[self.firstCell] = 0
+        queue.append(self.firstCell)
+        while len(queue) > 0:
+            router = queue.pop(len(queue) - 1)
+            for i in range(len(placedRouter)):
+                if cost[i] > i.getDistance(router):
+                    print("creation chemin", cmpt)
+                    cmpt += 1
+                    cost[i] = i.getDistance(router)
+                    pred[i] = router

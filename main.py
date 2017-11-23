@@ -1,4 +1,5 @@
 from polyhash import *
+
 def main():
     """ADRESSE DU JUGE"""
     """http://pitools.polytech.univ-nantes.fr/polyhash/app/index"""

@@ -6,7 +6,7 @@ __all__ = ['Map'] # ajouter dans cette liste tous les symboles 'importables'
 
 from PIL import Image
 from .cell import Cell
-from .RouterList import RouterList
+from .routerlist import RouterList
 from .polyhmodel import Bitmap
 from .backbone_road import Path
 from multiprocessing import Process,Value
@@ -15,7 +15,7 @@ import os, errno
 
 class Map:
     """
-    Classe representant une carte
+    Classe représentant une carte
     - rowsNumber -> nombre de ligne
     - columnsNumber -> nombre de colonne
     - routerRangeRadius -> rayon des routeurs
@@ -116,11 +116,9 @@ class Map:
         """On parcours la suite du carré jusqu'à block"""
         """On enregistre également les piliers (droite verticale et horizontale partant du router) dans les variables central"""
         BREAK = False
-
         centralVertTop = cellRouter.row -self.routerRangeRadius - 1
         centralVertBottom = cellRouter.row +self.routerRangeRadius + 1
         centralVert = centralVertTop
-        cellRouter.nearestWall = cellRouter.row + self.routerRangeRadius+1
         for incColumn in range(-1,2,2):
             centralBlock = cellRouter.column + (self.routerRangeRadius+1)*incColumn
             for incRow in range(-1,2,2):
@@ -155,10 +153,7 @@ class Map:
                     if(BREAK == True):
                         BREAK = False
                         break
-
         cellRouter.setPotential()
-
-
 
     def analyseMap(self):
         """
@@ -199,7 +194,6 @@ class Map:
         temp = Bitmap('X',(6,6,6),charDictionnary,MAP)
         #sauvegarde la bitmap en out.png
         temp.save(fileName)
-
 
     def isNotFull(self):
         """Indique si la carte est totalement fibré"""

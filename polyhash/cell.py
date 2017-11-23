@@ -35,9 +35,8 @@ class Cell:
         self.bestRouter = None
         self.nbCoveredCell = 0
         self.bufferIndex = 0
-
-
         self.subPotential = None
+
     def cover(self):
         """Indique qu'une cellule est déjà couverte"""
         self.isCovered = True

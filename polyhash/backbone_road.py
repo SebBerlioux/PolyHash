@@ -61,7 +61,6 @@ class Path:
                     self.cancel(map)
                     self.fiberCase = []
                     self.beginCell = map.map[Y][X]
-
         else:
             erreur = deltaY/2
             for i in range(1,deltaY+1):
@@ -77,7 +76,6 @@ class Path:
                     self.cancel(map)
                     self.fiberCase = []
                     self.beginCell = map.map[Y][X]
-
 
     def cancel(self,map):
         """Méthode qui retire les cellules fibrées"""

@@ -30,7 +30,6 @@ class Map:
         """ Constructeur de la classe """
         self.notComputeRouter = []
         self.routerList = RouterList()
-        self.routerTrash = RouterList()
         self.source = ""
         self.isInit = False
         self.map = list()
@@ -43,7 +42,6 @@ class Map:
         self.firstCell = Cell()
         self.asciiMap = []
         self.placedRouter = []
-        self.nbPass = 0
         if(fileName != None):
             self.initFromFile(fileName)
         self.fichier = "SAVE/image_"
@@ -111,92 +109,51 @@ class Map:
         else:
             return False
 
-    def isCoveredBy(self,cell,cellRouter):
-        """Détermine si une cellule cell est couverte par un routeur positionné à la cellule cellRouter"""
-        """SUBSQUARING AREA"""
-        if(cell.cellType == "WALL" or cell.cellType == "VOID"):
-            return False
-        stepColumn = 1
-        if(cell.column<cellRouter.column):
-            stepColumn = -1
-        for i in range(cellRouter.column,cell.column+stepColumn,stepColumn):
-            stepRow = 1
-            if(cell.row<cellRouter.row):
-                stepRow = -1
-            for j in range(cellRouter.row,cell.row+stepRow,stepRow):
-                if(self.outOfMap(j,i)==False):
-                    if(self.map[j][i].cellType=="WALL"):
-                        return False
-        return True
-
     def buildArea(self,cellRouter):
-        """Détermine les cellules que couvre un routeur"""
-        """for i in range(cellRouter.column - self.routerRangeRadius,cellRouter.column + self.routerRangeRadius+1):
-            for j in range(cellRouter.row - self.routerRangeRadius,cellRouter.row + self.routerRangeRadius+1):
-                if(self.outOfMap(j,i)==False):
-                    if(self.map[j][i].cellType == "FLOOR"):
-                        if(self.isCoveredBy(self.map[j][i],cellRouter)==True):
-                            cellRouter.coveredCell.append(self.map[j][i])"""
         """Test par block"""
-        """Haut gauche"""
-        centralBlock = cellRouter.column - self.routerRangeRadius -1
-        block = cellRouter.column - self.routerRangeRadius -1
-        for row in range(cellRouter.row,cellRouter.row - self.routerRangeRadius-1,-1):
-            for column in range(cellRouter.column,block,-1):
-                if(self.outOfMap(row,column)==False):
-                    if(self.map[row][column].cellType == "FLOOR"):
-                        cellRouter.coveredCell.append(self.map[row][column])
-                    else:
-                        if(row == cellRouter.row):
-                            centralBlock = column
-                        block = column
-                        break
+        """On divise la zone autour du routeur en 4"""
+        """On parcours chaque zone (en forme de carré)"""
+        """Lorsqu'on tombe sur un mur ou du vide on enregistre cette limite et la stocke dans block"""
+        """On parcours la suite du carré jusqu'à block"""
+        """On enregistre également les piliers (droite verticale et horizontale partant du router) dans les variables central"""
+        BREAK = False
+
+        centralVertTop = cellRouter.row -self.routerRangeRadius - 1
+        centralVertBottom = cellRouter.row +self.routerRangeRadius + 1
+        centralVert = centralVertTop
+
+        for incColumn in range(-1,2,2):
+            centralBlock = cellRouter.column + (self.routerRangeRadius+1)*incColumn
+            for incRow in range(-1,2,2):
+                if(incRow==1):
+                    centralVert = centralVertBottom
                 else:
-                    block = column
-                    break
-        """BAS GAUCHE"""
-        block = centralBlock
-        """Rajouter +1 à row pour plus de logique"""
-        for row in range(cellRouter.row,cellRouter.row + self.routerRangeRadius+1):
-            for column in range(cellRouter.column,block,-1):
-                if(self.outOfMap(row,column)==False):
-                    if(self.map[row][column].cellType == "FLOOR"):
-                        cellRouter.coveredCell.append(self.map[row][column])
-                    else:
-                        block = column
+                    centralVert = centralVertTop
+                block = centralBlock
+                for row in range(cellRouter.row+int((incRow+1)/2),centralVert,incRow):
+                    for column in range(cellRouter.column+int((incColumn+1)/2),block,incColumn):
+                        if(self.outOfMap(row,column)==False):
+                            CASE = self.map[row][column]
+                            if(CASE.cellType=="FLOOR"):
+                                cellRouter.coveredCell.append(CASE)
+                            else:
+                                if(row == cellRouter.row):
+                                    centralBlock = column
+                                if(column==cellRouter.column):
+                                    if(incRow == 1):
+                                        centralVertBottom = row
+                                    else:
+                                        centralVertTop = row
+                                    BREAK = True
+                                block = column
+                                break
+                        else:
+                            block = column
+                            break
+                    if(BREAK == True):
+                        BREAK = False
                         break
-                else:
-                    block = column
-                    break
-        """Haut droit"""
-        centralBlock = cellRouter.column + self.routerRangeRadius + 1
-        block = cellRouter.column + self.routerRangeRadius +1
-        for row in range(cellRouter.row,cellRouter.row - self.routerRangeRadius-1,-1):
-            for column in range(cellRouter.column+1,block):
-                if(self.outOfMap(row,column)==False):
-                    if(self.map[row][column].cellType == "FLOOR"):
-                        cellRouter.coveredCell.append(self.map[row][column])
-                    else:
-                        if(row == cellRouter.row):
-                            centralBlock = column
-                        block = column
-                        break
-                else:
-                    block = column
-                    break
-        """Bas droit"""
-        block = centralBlock
-        for row in range(cellRouter.row+1,cellRouter.row + self.routerRangeRadius+1):
-            for column in range(cellRouter.column+1,block):
-                if(self.outOfMap(row,column)==False):
-                    if(self.map[row][column].cellType == "FLOOR"):
-                        cellRouter.coveredCell.append(self.map[row][column])
-                    else:
-                        block = column
-                        break
-                else:
-                    block = column
-                    break
+
         cellRouter.setPotential()
 
 
@@ -241,23 +198,12 @@ class Map:
         temp.save(fileName)
         self.nbSave +=1
 
-    def saveASCIIMapAsFile(self,fileName):
-        """Sauvegarde la carte sous forme de texte"""
-        file = open(fileName,'w')
-        for line in self.asciiMap:
-            temp = ""
-            for char in line:
-                temp += char
-            file.write(temp)
-        file.close()
 
     def isNotFull(self):
         """Indique si la carte est totalement fibré"""
         for cell in self.notComputeRouter:
             if(cell.isCovered==False):
                 return True
-            else:
-                self.notComputeRouter.remove(cell)
         return False
 
     def placeRouter(self):

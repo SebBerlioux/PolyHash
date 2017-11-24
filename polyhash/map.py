@@ -142,10 +142,7 @@ class Map:
                                     else:
                                         centralVertTop = row
                                     BREAK = True
-                                if(cellRouter.nearestWall >abs(block-cellRouter.column)):
-                                    cellRouter.nearestWall = abs(block-cellRouter.column)
                                 block = column
-
                                 break
                         else:
                             block = column
@@ -208,10 +205,8 @@ class Map:
         isFirst = True
         temp = 0
         PLACEDCELL = [self.firstCell]
-
         routerNode = self.routerList.head
         while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
-            #routerNode.cellList.sort(key= lambda Cell:Cell.subPotential)
             for router in routerNode.cellList:
                 AddActualRouter = False
                 """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
@@ -229,16 +224,16 @@ class Map:
                     Et recalcul du buget
                     """
                     if(router.isCovered == False):
-                        #router.setBestProch(PLACEDCELL)
-                        #pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
+                        router.setBestProch(PLACEDCELL)
+                        pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
                         rendement = (1000 * router.nbCoveredCell)-(self.routerCosts)
                         if(self.budget - self.routerCosts > 0 and rendement >= 0):
                             self.placedRouter.append(router)
-                            #PLACEDCELL.append(router)
+                            PLACEDCELL.append(router)
                             router.isRouter = True
                             router.coverSelfCell()
-                            #router.backRoad = pathToRouter
-                            #self.budget = self.budget - self.routerCosts - pathToRouter.cost()
+                            router.backRoad = pathToRouter
+                            self.budget = self.budget - self.routerCosts - pathToRouter.cost()
                         else:
                             pathToRouter.cancel(self)
                 else:
@@ -257,9 +252,11 @@ class Map:
     def pathFinder(self):
         """Méthode qui trouve un arbre couvrant minimum reliant tous les routeurs grâce à l'algorithme de Prim"""
         cost = {}
+        pred = {}
         queue = []
         cmpt = 1
         for router in self.placedRouter:
+            router.backRoad.cancel(self)
             cost[router] = math.inf
             queue.append(router)
         cost[self.firstCell] = 0
@@ -268,12 +265,14 @@ class Map:
         while len(queue) > 0:
             router = queue.pop(len(queue) - 1)
             for i in cost:
-                if i in queue:
+                if router != i and router not in i.nextRoad:
                     if cost[i] > i.getDistance(router):
                         print("creation chemin", cmpt)
                         cmpt += 1
                         cost[i] = i.getDistance(router)
+                        pred[i] = router
                         print("cost = ", cost[i])
-                        pathToRouter = Path(router, i, self.backBoneCosts, self)
-                        i.backRoad = pathToRouter
-                        self.budget -= pathToRouter.cost()
+        for router in pred.keys():
+            pathToRouter = Path(router,pred[router],self.backBoneCosts,self)
+            router.backRoad = pathToRouter
+            pred[router].nextRoad.append(pathToRouter)

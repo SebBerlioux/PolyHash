@@ -254,25 +254,27 @@ class Map:
         cost = {}
         pred = {}
         queue = []
-        cmpt = 1
         for router in self.placedRouter:
             router.backRoad.cancel(self)
             cost[router] = math.inf
+            pred[router] = 0
             queue.append(router)
         cost[self.firstCell] = 0
         queue.append(self.firstCell)
-        print("dist = ", self.firstCell.getDistance(self.placedRouter[0]))
         while len(queue) > 0:
-            router = queue.pop(len(queue) - 1)
+            router = queue.pop()
             for i in cost:
-                if router != i and router not in i.nextRoad:
-                    if cost[i] > i.getDistance(router):
-                        print("creation chemin", cmpt)
-                        cmpt += 1
-                        cost[i] = i.getDistance(router)
-                        pred[i] = router
-                        print("cost = ", cost[i])
+                if router != i:
+                    if(i not in pred.keys()):
+                        if cost[router] > i.getDistance(router):
+                            cost[router] = i.getDistance(router)
+                            pred[router] = i
+                    elif(pred[i]!=router):
+                        if cost[router] > i.getDistance(router):
+                            cost[router] = i.getDistance(router)
+                            pred[router] = i
         for router in pred.keys():
-            pathToRouter = Path(router,pred[router],self.backBoneCosts,self)
-            router.backRoad = pathToRouter
-            pred[router].nextRoad.append(pathToRouter)
+            if(router != self.firstCell):
+                pathToRouter = Path(pred[router],router,self.backBoneCosts,self)
+                router.backRoad = pathToRouter
+                pred[router].nextRoad.append(pathToRouter)

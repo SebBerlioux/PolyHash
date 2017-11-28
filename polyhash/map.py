@@ -254,27 +254,47 @@ class Map:
         cost = {}
         pred = {}
         queue = []
+        temp = []
+        """INIT"""
+        cost[self.firstCell] = 0
+        pred[self.firstCell] = None
+        temp.append(self.firstCell)
+
         for router in self.placedRouter:
+            temp.append(router)
             router.backRoad.cancel(self)
             cost[router] = math.inf
-            pred[router] = 0
+            pred[router] = None
             queue.append(router)
-        cost[self.firstCell] = 0
-        queue.append(self.firstCell)
+        """Tant que l'on a pas placé tout les routeurs"""
         while len(queue) > 0:
             router = queue.pop()
-            for i in cost:
+            """Test avec tout les autres routeurs"""
+            for i in temp:
+                """Exclusion du test avec lui même"""
                 if router != i:
-                    if(i not in pred.keys()):
-                        if cost[router] > i.getDistance(router):
-                            cost[router] = i.getDistance(router)
-                            pred[router] = i
-                    elif(pred[i]!=router):
-                        if cost[router] > i.getDistance(router):
-                            cost[router] = i.getDistance(router)
-                            pred[router] = i
+                        """Vérification si le précédent d'un routeur est déjà assigné ou non"""
+                        if(pred[i]==None):
+                            if cost[router] >= i.getDistance(router):
+                                cost[router] = i.getDistance(router)
+                                pred[router] = i
+                        elif pred[i]!=router:
+                            """TEST si le router produit une boucle"""
+                            NOTINLIST = True
+                            tempR = i
+                            while(pred[tempR]!=None):
+                                if(tempR == router):
+                                    NOTINLIST = False
+                                    break
+                                tempR = pred[tempR]
+
+                            if cost[router] >=i.getDistance(router) and NOTINLIST == True:
+                                cost[router] = i.getDistance(router)
+                                pred[router] = i
+
+        """Parcours du résultat pour la création des chemins"""
         for router in pred.keys():
-            if(router != self.firstCell):
+            if(pred[router]!=None):
                 pathToRouter = Path(pred[router],router,self.backBoneCosts,self)
                 router.backRoad = pathToRouter
                 pred[router].nextRoad.append(pathToRouter)

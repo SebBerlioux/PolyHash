@@ -225,17 +225,19 @@ class Map:
                     """
                     if(router.isCovered == False):
                         router.setBestProch(PLACEDCELL)
-                        pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
+                        #pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
+                        COST = int(router.getDistance(router.bestRouter))*self.backBoneCosts
                         rendement = (1000 * router.nbCoveredCell)-(self.routerCosts)
-                        if(self.budget - self.routerCosts > 0 and rendement >= 0):
+                        if(self.budget - self.routerCosts-COST > 0 and rendement >= 0):
                             self.placedRouter.append(router)
                             PLACEDCELL.append(router)
                             router.isRouter = True
                             router.coverSelfCell()
-                            router.backRoad = pathToRouter
-                            self.budget = self.budget - self.routerCosts - pathToRouter.cost()
+                            #router.backRoad = pathToRouter
+                            self.budget = self.budget - self.routerCosts -COST
                         else:
-                            pathToRouter.cancel(self)
+                            pass
+                            #pathToRouter.cancel(self)
                 else:
                     """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
                     self.routerList.insert(router)
@@ -262,7 +264,7 @@ class Map:
 
         for router in self.placedRouter:
             temp.append(router)
-            router.backRoad.cancel(self)
+            #router.backRoad.cancel(self)
             cost[router] = math.inf
             pred[router] = None
             queue.append(router)
@@ -287,7 +289,6 @@ class Map:
                                     NOTINLIST = False
                                     break
                                 tempR = pred[tempR]
-
                             if cost[router] >=i.getDistance(router) and NOTINLIST == True:
                                 cost[router] = i.getDistance(router)
                                 pred[router] = i

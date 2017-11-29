@@ -171,9 +171,10 @@ class Map:
     def save(self):
         """Fonction qui sauvegarde l'itération actuelle de la carte en image"""
         for router in self.placedRouter:
-            for case in router.backRoad.fiberCase:
-                self.asciiMap[case[1]][case[0]] = 'E'
-            self.asciiMap[router.row][router.column] = 'B'
+            if router.backRoad != None:
+                for case in router.backRoad.fiberCase:
+                    self.asciiMap[case[1]][case[0]] = 'E'
+                self.asciiMap[router.row][router.column] = 'B'
         self.saveASCIIMap(self.fichier+self.extension)
 
     def saveASCIIMap(self,fileName="out.png"):
@@ -225,19 +226,19 @@ class Map:
                     """
                     if(router.isCovered == False):
                         router.setBestProch(PLACEDCELL)
-                        #pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
-                        COST = int(router.getDistance(router.bestRouter))*self.backBoneCosts
+                        pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
+                        COST = pathToRouter.cost()
                         rendement = (1000 * router.nbCoveredCell)-(self.routerCosts)
                         if(self.budget - self.routerCosts-COST > 0 and rendement >= 0):
                             self.placedRouter.append(router)
+                            router.backBoneDist = router.getDistance(self.firstCell)
                             PLACEDCELL.append(router)
                             router.isRouter = True
                             router.coverSelfCell()
-                            #router.backRoad = pathToRouter
+                            router.backRoad = pathToRouter
                             self.budget = self.budget - self.routerCosts -COST
                         else:
-                            pass
-                            #pathToRouter.cancel(self)
+                            pathToRouter.cancel(self)
                 else:
                     """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
                     self.routerList.insert(router)
@@ -258,40 +259,27 @@ class Map:
         queue = []
         temp = []
         """INIT"""
-        cost[self.firstCell] = 0
+        cost[self.firstCell] = math.inf
         pred[self.firstCell] = None
+        alreadyPlace = [self.firstCell]
         temp.append(self.firstCell)
+        """Tri de la liste de routeur en fonction de la distance au backbone"""
+        self.placedRouter.sort(key= lambda Cell:Cell.backBoneDist)
 
         for router in self.placedRouter:
-            temp.append(router)
-            #router.backRoad.cancel(self)
+            router.backRoad.cancel(self)
             cost[router] = math.inf
             pred[router] = None
             queue.append(router)
+
         """Tant que l'on a pas placé tout les routeurs"""
-        while len(queue) > 0:
-            router = queue.pop()
-            """Test avec tout les autres routeurs"""
-            for i in temp:
-                """Exclusion du test avec lui même"""
-                if router != i:
-                        """Vérification si le précédent d'un routeur est déjà assigné ou non"""
-                        if(pred[i]==None):
-                            if cost[router] >= i.getDistance(router):
-                                cost[router] = i.getDistance(router)
-                                pred[router] = i
-                        elif pred[i]!=router:
-                            """TEST si le router produit une boucle"""
-                            NOTINLIST = True
-                            tempR = i
-                            while(pred[tempR]!=None):
-                                if(tempR == router):
-                                    NOTINLIST = False
-                                    break
-                                tempR = pred[tempR]
-                            if cost[router] >=i.getDistance(router) and NOTINLIST == True:
-                                cost[router] = i.getDistance(router)
-                                pred[router] = i
+        for router in queue:
+            """recherche du routeur placé le plus proche"""
+            for i in alreadyPlace:
+                    if cost[router] >i.getDistance(router):
+                        cost[router] = i.getDistance(router)
+                        pred[router] = i
+            alreadyPlace.append(router)
 
         """Parcours du résultat pour la création des chemins"""
         for router in pred.keys():

@@ -37,6 +37,8 @@ class Cell:
         self.bufferIndex = 0
         self.subPotential = None
 
+        self.backBoneDist = 0
+
     def cover(self):
         """Indique qu'une cellule est déjà couverte"""
         self.isCovered = True

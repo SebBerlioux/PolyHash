@@ -29,7 +29,7 @@ def main():
     print("Nombre de router placés : ",len(mapIn.placedRouter))
     print("Budget restant : ",mapIn.budget)
     print("............SAUVEGARDE DE LA SOLUTION............")
-    solution = SolverSaver(saveLocation,mapIn.placedRouter)
+    solution = SolverSaver(saveLocation,mapIn.placedRouter,mapIn.firstCell)
     solution.writeInFile()
     print("SAUVEGARDE DE LA CARTE EN IMAGE\n")
     mapIn.saveASCIIMap()

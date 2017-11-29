@@ -208,6 +208,7 @@ class Map:
         PLACEDCELL = [self.firstCell]
         routerNode = self.routerList.head
         while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
+            routerToRemove = []
             for router in routerNode.cellList:
                 AddActualRouter = False
                 """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
@@ -237,11 +238,15 @@ class Map:
                             router.coverSelfCell()
                             router.backRoad = pathToRouter
                             self.budget = self.budget - self.routerCosts -COST
+                            routerToRemove.append(router)
                         else:
                             pathToRouter.cancel(self)
                 else:
                     """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
                     self.routerList.insert(router)
+            if(len(routerToRemove)>0):
+                for router in routerToRemove:
+                    routerNode.cellList.remove(router)
             """On passe au routeur suivant dans la liste"""
             routerNode = routerNode.next
         if(self.record==True):
@@ -262,9 +267,9 @@ class Map:
         cost[self.firstCell] = math.inf
         pred[self.firstCell] = None
         alreadyPlace = [self.firstCell]
-        temp.append(self.firstCell)
+
         """Tri de la liste de routeur en fonction de la distance au backbone"""
-        self.placedRouter.sort(key= lambda Cell:Cell.backBoneDist)
+        self.placedRouter.sort(key= lambda Cell:(Cell.backBoneDist))
 
         for router in self.placedRouter:
             router.backRoad.cancel(self)
@@ -275,11 +280,13 @@ class Map:
         """Tant que l'on a pas placé tout les routeurs"""
         for router in queue:
             """recherche du routeur placé le plus proche"""
+            Last = None
             for i in alreadyPlace:
                     if cost[router] >i.getDistance(router):
                         cost[router] = i.getDistance(router)
                         pred[router] = i
-            alreadyPlace.append(router)
+                        Last = router
+            alreadyPlace.append(Last)
 
         """Parcours du résultat pour la création des chemins"""
         for router in pred.keys():

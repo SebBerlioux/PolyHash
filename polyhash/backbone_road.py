@@ -73,7 +73,6 @@ class Path:
                     self.fiberCase += [(X,Y)]
                     map.map[Y][X].isFiber = True
                 else:
-                    pass
                     self.cancel(map)
                     self.fiberCase = []
                     self.beginCell = map.map[Y][X]

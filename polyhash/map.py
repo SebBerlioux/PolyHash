@@ -206,52 +206,55 @@ class Map:
         isFirst = True
         temp = 0
         PLACEDCELL = [self.firstCell]
-        routerNode = self.routerList.head
-        while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
-            routerToRemove = []
-            for router in routerNode.cellList:
-                AddActualRouter = False
-                """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
-                if isFirst == True:
-                    isFirst = False
-                """Recalcul du potentiel"""
-                if isFirst == False:
-                    temp = router.resetPotiental()
-                if(temp == router.potential):
-                    AddActualRouter = True
-                if AddActualRouter == True:
-                    """
-                    Récupération du coût du routeur et de son chemin
-                    Ajout si il n'y pas de dépassement de
-                    Et recalcul du buget
-                    """
-                    if(router.isCovered == False):
-                        router.setBestProch(PLACEDCELL)
-                        pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
-                        COST = pathToRouter.cost()
-                        rendement = (1000 * router.nbCoveredCell)-(self.routerCosts)
-                        if(self.budget - self.routerCosts-COST > 0 and rendement >= 0):
-                            self.placedRouter.append(router)
-                            router.backBoneDist = router.getDistance(self.firstCell)
-                            PLACEDCELL.append(router)
-                            router.isRouter = True
-                            router.coverSelfCell()
-                            router.backRoad = pathToRouter
-                            self.budget = self.budget - self.routerCosts -COST
-                            routerToRemove.append(router)
-                        else:
-                            pathToRouter.cancel(self)
-                else:
-                    """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
-                    self.routerList.insert(router)
-            if(len(routerToRemove)>0):
-                for router in routerToRemove:
-                    routerNode.cellList.remove(router)
-            """On passe au routeur suivant dans la liste"""
-            routerNode = routerNode.next
+        while(self.budget>self.routerCosts and self.isNotFull()==True):
+            print("BEGIN")
+            routerNode = self.routerList.head
+            while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
+                routerToRemove = []
+                for router in routerNode.cellList:
+                    AddActualRouter = False
+                    """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
+                    if isFirst == True:
+                        isFirst = False
+                    """Recalcul du potentiel"""
+                    if isFirst == False:
+                        temp = router.resetPotiental()
+                    if(temp == router.potential):
+                        AddActualRouter = True
+                    if AddActualRouter == True:
+                        """
+                        Récupération du coût du routeur et de son chemin
+                        Ajout si il n'y pas de dépassement de
+                        Et recalcul du buget
+                        """
+                        if(router.isCovered == False):
+                            router.setBestProch(PLACEDCELL)
+                            pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
+                            COST = pathToRouter.cost()
+                            if(self.budget - self.routerCosts-COST > 0):
+                                self.placedRouter.append(router)
+                                router.backBoneDist = router.getDistance(self.firstCell)
+                                PLACEDCELL.append(router)
+                                router.isRouter = True
+                                router.coverSelfCell()
+                                router.backRoad = pathToRouter
+                                self.budget -=(self.routerCosts + COST)
+                                routerToRemove.append(router)
+                            else:
+                                pathToRouter.cancel(self)
+                    else:
+                        """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
+                        self.routerList.insert(router)
+                if(len(routerToRemove)>0):
+                    for router in routerToRemove:
+                        routerNode.cellList.remove(router)
+                """On passe au routeur suivant dans la liste"""
+                routerNode = routerNode.next
+            print("BUDGET AVANT OPTIMISATION : ",self.budget)
+            self.pathFinder()
+            print("BUDGET APRES OPTIMISATION : ",self.budget)
         if(self.record==True):
             """On sauvegarde la solution dans le fichier"""
-            self.pathFinder()
             self.save()
             file = open("SAVE/trace.txt",'w')
             file.write(RouterTrace)
@@ -272,6 +275,7 @@ class Map:
         self.placedRouter.sort(key= lambda Cell:(Cell.backBoneDist))
 
         for router in self.placedRouter:
+            self.budget += router.backRoad.cost()+1
             router.backRoad.cancel(self)
             cost[router] = math.inf
             pred[router] = None
@@ -286,6 +290,8 @@ class Map:
                         cost[router] = i.getDistance(router)
                         pred[router] = i
                         Last = router
+            if(pred[router]==None):
+                print("ERREUR")
             alreadyPlace.append(Last)
 
         """Parcours du résultat pour la création des chemins"""
@@ -294,3 +300,4 @@ class Map:
                 pathToRouter = Path(pred[router],router,self.backBoneCosts,self)
                 router.backRoad = pathToRouter
                 pred[router].nextRoad.append(pathToRouter)
+                self.budget -= pathToRouter.cost()+1

@@ -38,11 +38,16 @@ class SolverSaver:
         self.nbFiber = 0
         out = ""
         """self.writerRec(self.firstCell)"""
-        for router in self.placedRouter:
-            self.nbFiber += len(router.backRoad.fiberCase)
-            self.routerStr += str(router.row)+' '+str(router.column)+'\n'
-            for case in router.backRoad.fiberCase:
+        for road in self.firstCell.nextRoad:
+            self.nbFiber += len(road.fiberCase)
+            for case in road.fiberCase:
                 self.fiberStr +=str(case[1])+' '+str(case[0])+'\n'
+        for router in self.placedRouter:
+            self.routerStr += str(router.row)+' '+str(router.column)+'\n'
+            for road in router.nextRoad:
+                self.nbFiber += len(road.fiberCase)
+                for case in road.fiberCase:
+                    self.fiberStr +=str(case[1])+' '+str(case[0])+'\n'
         self.fiberStr = str(self.nbFiber)+"\n"+self.fiberStr
         out = self.fiberStr+self.routerStr
         file = open(self.fileName, "w")

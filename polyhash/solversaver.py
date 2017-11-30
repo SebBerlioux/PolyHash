@@ -20,24 +20,14 @@ class SolverSaver:
         self.fiberStr = ""
         self.nbFiber = 0
 
-    def writerRec(self,actualNode):
-        if(actualNode != self.firstCell):
-            self.routerStr += str(actualNode.row)+' '+str(actualNode.column)+'\n'
-        for road in actualNode.nextRoad:
-            if(actualNode != self.firstCell):
-                self.nbFiber += len(actualNode.backRoad.fiberCase)
-                for case in actualNode.backRoad.fiberCase:
-                    self.fiberStr +=str(case[1])+' '+str(case[0])+'\n'
-            self.writerRec(road.endCell)
     def writeInFile(self):
         """Fonction qui écrit la solution dans le fichier"""
         nbRouter = len(self.placedRouter)
-
         self.routerStr = str(nbRouter)+'\n'
         self.fiberStr = ""
         self.nbFiber = 0
         out = ""
-        """self.writerRec(self.firstCell)"""
+
         for road in self.firstCell.nextRoad:
             self.nbFiber += len(road.fiberCase)
             for case in road.fiberCase:

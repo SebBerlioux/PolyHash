@@ -1,13 +1,10 @@
 class Path:
     """
-    Classe représentant un chemin fibré représenté par :
-    - beg -> la cellule de début
-    - end -> la cellule de fin
-    - backBoneCost -> le coût du chemin
-    - map -> la carte
+    Classe représentant un chemin fibré
     """
-
-    def __init__(self,beg=None,end=None,backBoneCost = 0,map=None):
+    """coût de une cellule de fibre"""
+    backBoneCost = 0
+    def __init__(self,beg=None,end=None,map=None):
         """Constructeur de la classe"""
         """Déclaration des cellules"""
         self.beginCell = beg
@@ -17,8 +14,7 @@ class Path:
         self.end = (end.column,end.row)
         """Liste des cases fibrés"""
         self.fiberCase = []
-        """coût de une cellule de fibre"""
-        self.backBoneCost = backBoneCost
+        """Calcul du chemin"""
         self.way(map)
 
     def way(self,map):
@@ -39,8 +35,6 @@ class Path:
             incY = -1
         deltaX = abs(deltaX)
         deltaY = abs(deltaY)
-        """Placement du premier point, pas nécessaire"""
-        #self.fiberCase += [self.beg]
         """Si la pente en X est plus grande que la pente en Y"""
         if(deltaX>deltaY):
             erreur = deltaX/2
@@ -58,6 +52,7 @@ class Path:
                     self.fiberCase += [(X,Y)]
                     map.map[Y][X].isFiber = True
                 else:
+                    """Annulation d'un chemin en cas de croisement"""
                     self.cancel(map)
                     self.fiberCase = []
                     self.beginCell = map.map[Y][X]
@@ -78,10 +73,10 @@ class Path:
                     self.beginCell = map.map[Y][X]
 
     def cancel(self,map):
-        """Méthode qui retire les cellules fibrées"""
+        """Méthode qui retire les cellules fibrées afin d'annuler un chemin"""
         for case in self.fiberCase:
             map.map[case[1]][case[0]].isFiber = False
 
     def cost(self):
         """Méthode qui calcul le coût d'un chemin"""
-        return len(self.fiberCase) * self.backBoneCost
+        return len(self.fiberCase) * Path.backBoneCost

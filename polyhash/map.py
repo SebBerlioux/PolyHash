@@ -7,11 +7,10 @@ __all__ = ['Map'] # ajouter dans cette liste tous les symboles 'importables'
 from PIL import Image
 from .cell import Cell
 from .routerlist import RouterList
-from .polyhmodel import Bitmap
 from .backbone_road import Path
 from multiprocessing import Process,Value
 import os, errno, math
-
+import random
 
 class Map:
     """
@@ -26,7 +25,7 @@ class Map:
     - isInit -> si la carte est initialise avec un fichier
     """
 
-    def __init__(self,fileName = None,record = False):
+    def __init__(self,fileName = None):
         """ Constructeur de la classe """
         self.notComputeRouter = []
         self.routerList = RouterList()
@@ -40,17 +39,14 @@ class Map:
         self.routerCosts = 0
         self.budget = 0
         self.firstCell = Cell()
-        self.asciiMap = []
         self.placedRouter = []
         if(fileName != None):
             self.initFromFile(fileName)
-        self.fichier = "SAVE/image_"
-        self.extension = ".png"
-        self.record = record
-        if(self.record == True):
-            directory = "./SAVE"
-            if not os.path.exists(directory):
-                os.makedirs(directory)
+        self.score = -1
+
+        directory = "./SAVE"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
     def initFromFile(self,file):
         """ Initialise la carte avec un fichier """
@@ -70,19 +66,18 @@ class Map:
             if(lineCounter == 1):
                 SecondLine = line.split()
                 self.backBoneCosts = int(SecondLine[0])
+                Path.backBoneCost = self.backBoneCosts
                 self.routerCosts = int(SecondLine[1])
                 self.budget = int(SecondLine[2])
             if(lineCounter == 2):
                 ThirdLine = line.split()
                 self.firstCell = Cell(int(ThirdLine[0]),int(ThirdLine[1]))
             if(lineCounter>2):
-                self.asciiMap.append([])
                 self.map.append([])
                 LINE = line
                 columnCounter = 0
                 for char in LINE:
                     temp = Cell(len(self.map)-1,columnCounter,Cell.getCellType(char))
-                    self.asciiMap[len(self.asciiMap)-1].append(char)
                     self.map[len(self.map)-1].append(temp)
                     if(temp.cellType == "FLOOR"):
                         self.notComputeRouter.append(temp)
@@ -157,41 +152,12 @@ class Map:
         Calul tout les routeurs de la carte
         Chaque routeur doit être mit dans une liste triée par leurs potentiels
         """
-        best = 0
         for router in self.notComputeRouter:
             self.buildArea(router)
-            if(router.potential>best):
-                best = router.potential
             self.routerList.insert(router)
-            self.asciiMap[router.row][router.column] = "B"
-
         self.routerList.listPotential.sort(reverse=True)
-        print("BEST POTENTIEL : ",best)
 
-    def save(self):
-        """Fonction qui sauvegarde l'itération actuelle de la carte en image"""
-        for router in self.placedRouter:
-            if router.backRoad != None:
-                for case in router.backRoad.fiberCase:
-                    self.asciiMap[case[1]][case[0]] = 'E'
-                self.asciiMap[router.row][router.column] = 'B'
-        self.saveASCIIMap(self.fichier+self.extension)
 
-    def saveASCIIMap(self,fileName="out.png"):
-        """Sauvegarde la carte en Bitmap"""
-        charDictionnary = dict()
-        charDictionnary['-']=(125,125,125)
-        charDictionnary['#']=(0,0,0)
-        charDictionnary['.']=(255,255,255)
-        charDictionnary['B']=(65, 99, 155)
-        charDictionnary['E']=(65, 155, 103)
-        charDictionnary['R']=(0,0,255)
-        #recuperation du tableau de caractere representant la carte
-        MAP = self.asciiMap
-        #creation de la bitmap
-        temp = Bitmap('X',(6,6,6),charDictionnary,MAP)
-        #sauvegarde la bitmap en out.png
-        temp.save(fileName)
 
     def isNotFull(self):
         """Indique si la carte est totalement fibré"""
@@ -202,17 +168,18 @@ class Map:
 
     def placeRouter(self):
         """Méthode de placement de routeur intelligente"""
-        RouterTrace = ""
         isFirst = True
         temp = 0
+        """Liste des cellules placées courantes contenant le backbone"""
         PLACEDCELL = [self.firstCell]
         noPlacement = False
         while(noPlacement==False and self.isNotFull()==True and self.budget>self.routerCosts):
-            print("BEGIN")
             noPlacement = True
             routerNode = self.routerList.head
             while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
+                """Liste des routeurs inutiles"""
                 routerToRemove = []
+                #random.shuffle(routerNode.cellList)
                 for router in routerNode.cellList:
                     AddActualRouter = False
                     """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
@@ -231,7 +198,7 @@ class Map:
                         """
                         if(router.isCovered == False):
                             router.setBestProch(PLACEDCELL)
-                            pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
+                            pathToRouter = Path(router.bestRouter,router,self)
                             COST = pathToRouter.cost()
                             if(self.budget - self.routerCosts-COST > 0):
                                 self.placedRouter.append(router)
@@ -249,20 +216,20 @@ class Map:
                         """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
                         self.routerList.insert(router)
                 if(len(routerToRemove)>0):
+                    """Suppression des routeurs inutiles"""
                     for router in routerToRemove:
                         routerNode.cellList.remove(router)
                 """On passe au routeur suivant dans la liste"""
                 routerNode = routerNode.next
-            print("BUDGET AVANT OPTIMISATION : ",self.budget)
+            """Optimisation des chemins"""
             self.pathFinder()
-            print("BUDGET APRES OPTIMISATION : ",self.budget)
-        if(self.record==True):
-            """On sauvegarde la solution dans le fichier"""
-            self.save()
-            file = open("SAVE/trace.txt",'w')
-            file.write(RouterTrace)
-            file.close()
-
+        self.calculScore()
+    """Fonction calculant le score de la carte"""
+    def calculScore(self):
+        for cell in self.notComputeRouter:
+            if(cell.isCovered==True):
+                self.score += 1000
+        self.score += self.budget
     def pathFinder(self):
         """Méthode qui trouve un arbre couvrant minimum reliant tous les routeurs grâce à l'algorithme de Prim"""
         cost = {}
@@ -276,6 +243,7 @@ class Map:
         self.firstCell.nextRoad.clear()
         """Tri de la liste de routeur en fonction de la distance au backbone"""
         self.placedRouter.sort(key= lambda Cell:(Cell.backBoneDist))
+        """Reinitialisation des chemins"""
         for router in self.placedRouter:
             self.budget += router.backRoad.cost()
             router.backRoad.cancel(self)
@@ -298,7 +266,7 @@ class Map:
         """Parcours du résultat pour la création des chemins"""
         for router in pred.keys():
             if(pred[router]!=None):
-                pathToRouter = Path(pred[router],router,self.backBoneCosts,self)
+                pathToRouter = Path(pred[router],router,self)
                 router.backRoad = pathToRouter
                 pred[router].nextRoad.append(pathToRouter)
                 self.budget -= (pathToRouter.cost())

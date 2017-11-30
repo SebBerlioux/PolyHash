@@ -206,8 +206,10 @@ class Map:
         isFirst = True
         temp = 0
         PLACEDCELL = [self.firstCell]
-        while(self.budget>self.routerCosts and self.isNotFull()==True):
+        noPlacement = False
+        while(noPlacement==False and self.isNotFull()==True and self.budget>self.routerCosts):
             print("BEGIN")
+            noPlacement = True
             routerNode = self.routerList.head
             while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
                 routerToRemove = []
@@ -240,6 +242,7 @@ class Map:
                                 router.backRoad = pathToRouter
                                 self.budget -=(self.routerCosts + COST)
                                 routerToRemove.append(router)
+                                noPlacement = False
                             else:
                                 pathToRouter.cancel(self)
                     else:
@@ -270,13 +273,13 @@ class Map:
         cost[self.firstCell] = math.inf
         pred[self.firstCell] = None
         alreadyPlace = [self.firstCell]
-
+        self.firstCell.nextRoad.clear()
         """Tri de la liste de routeur en fonction de la distance au backbone"""
         self.placedRouter.sort(key= lambda Cell:(Cell.backBoneDist))
-
         for router in self.placedRouter:
-            self.budget += router.backRoad.cost()+1
+            self.budget += router.backRoad.cost()
             router.backRoad.cancel(self)
+            router.nextRoad.clear()
             cost[router] = math.inf
             pred[router] = None
             queue.append(router)
@@ -290,8 +293,6 @@ class Map:
                         cost[router] = i.getDistance(router)
                         pred[router] = i
                         Last = router
-            if(pred[router]==None):
-                print("ERREUR")
             alreadyPlace.append(Last)
 
         """Parcours du résultat pour la création des chemins"""
@@ -300,4 +301,4 @@ class Map:
                 pathToRouter = Path(pred[router],router,self.backBoneCosts,self)
                 router.backRoad = pathToRouter
                 pred[router].nextRoad.append(pathToRouter)
-                self.budget -= pathToRouter.cost()+1
+                self.budget -= (pathToRouter.cost())

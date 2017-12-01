@@ -227,8 +227,7 @@ class Map:
                         router.setBestProch(PLACEDCELL)
                         #pathToRouter = Path(router.bestRouter,router,self.backBoneCosts,self)
                         COST = int(router.getDistance(router.bestRouter))*self.backBoneCosts
-                        rendement = (1000 * router.nbCoveredCell)-(self.routerCosts)
-                        if(self.budget - self.routerCosts-COST > 0 and rendement >= 0):
+                        if(self.budget - self.routerCosts-COST > 0):
                             self.placedRouter.append(router)
                             PLACEDCELL.append(router)
                             router.isRouter = True
@@ -260,38 +259,26 @@ class Map:
         """INIT"""
         cost[self.firstCell] = 0
         pred[self.firstCell] = None
-        temp.append(self.firstCell)
-
+        linkedRouter = [self.firstCell]
         for router in self.placedRouter:
-            temp.append(router)
             #router.backRoad.cancel(self)
-            cost[router] = math.inf
+            temp.append(router)
+            cost[router] = 999999999999999999999
             pred[router] = None
             queue.append(router)
+        temp.append(self.firstCell)
         """Tant que l'on a pas placé tout les routeurs"""
         while len(queue) > 0:
-            router = queue.pop()
+            router = queue.pop(0)
+            last = None
             """Test avec tout les autres routeurs"""
             for i in temp:
                 """Exclusion du test avec lui même"""
-                if router != i:
-                        """Vérification si le précédent d'un routeur est déjà assigné ou non"""
-                        if(pred[i]==None):
-                            if cost[router] >= i.getDistance(router):
-                                cost[router] = i.getDistance(router)
-                                pred[router] = i
-                        elif pred[i]!=router:
-                            """TEST si le router produit une boucle"""
-                            NOTINLIST = True
-                            tempR = i
-                            while(pred[tempR]!=None):
-                                if(tempR == router):
-                                    NOTINLIST = False
-                                    break
-                                tempR = pred[tempR]
-                            if cost[router] >=i.getDistance(router) and NOTINLIST == True:
-                                cost[router] = i.getDistance(router)
-                                pred[router] = i
+                if router != i and cost[router] > i.getDistance(router):
+                    cost[router] = i.getDistance(router)
+                    pred[router] = i
+                    last = i
+                temp.remove(last)
 
         """Parcours du résultat pour la création des chemins"""
         for router in pred.keys():

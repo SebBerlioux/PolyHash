@@ -10,3 +10,5 @@
 # Par exemple, ça permet l'usage de: from .polyhutils import say_hello
 # plutôt que: from .polyhutils.polyhio import say_hello
 from .polyhio import *
+import sys
+sys.setrecursionlimit(10000)

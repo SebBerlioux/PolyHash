@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 __all__ = ['Cell']
-from math import sqrt
 
+from math import sqrt
 
 class Cell:
     """
@@ -14,7 +11,6 @@ class Cell:
     - routeur
     - fibre
     """
-
     def __init__(self, row=0, column=0, cellType="NONE"):
         """ Constructeur de la classe """
         self.row = row
@@ -36,26 +32,15 @@ class Cell:
         self.nbCoveredCell = 0
         self.bufferIndex = 0
         self.subPotential = None
+        self.backBoneDist = 0
 
     def cover(self):
         """Indique qu'une cellule est déjà couverte"""
         self.isCovered = True
-    def isHelpFUll(self):
-        for router in self.coveredCell:
-            if(router.isCovered==False):
-                return True
-        return False
+
     def getNbNexCell(self):
         """Renvoit le nombre de routeur suivant"""
         return len(nextRoad)
-
-    def nextCell(self,index):
-        """Renvoit le routeur suivant à l'index index"""
-        return nextRoad[index].endCell
-
-    def backCell(self):
-        """Renvoit le routeur précédent"""
-        return backRoad.beginCell
 
     def coverSelfCell(self):
         """Indique les cellules que couvre le routeur"""

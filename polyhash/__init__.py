@@ -9,7 +9,7 @@
     ainsi que tous les traitements supplémentaires utiles à son bon fonctionnement.
 """
 
-__version__ = "1.3.0"
+__version__ = "1.2.0"
 
 # [Optionnel] ajouter ici les principaux symboles, à importer facilement lors de l'usage du paquet polyhash
 

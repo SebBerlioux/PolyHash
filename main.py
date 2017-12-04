@@ -8,9 +8,14 @@ def main():
     mapIn = Map(getArgument()[1])
     print("............ANALYSE............")
     mapIn.analyseMap()
+
+
     print("............PLACEMENT............")
     mapIn.placeRouter()
     print("SCORE : ",mapIn.score)
+    print("ROUTEURS : ",len(mapIn.placedRouter))
+
+
     print("............SAUVEGARDE DE LA SOLUTION............")
     solution = SolverSaver(saveLocation,mapIn.placedRouter,mapIn.firstCell)
     solution.writeInFile()

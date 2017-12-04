@@ -179,7 +179,7 @@ class Map:
             while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
                 """Liste des routeurs inutiles"""
                 routerToRemove = []
-                #random.shuffle(routerNode.cellList)
+                random.shuffle(routerNode.cellList)
                 for router in routerNode.cellList:
                     AddActualRouter = False
                     """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""

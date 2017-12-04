@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 __all__ = ['SolverSaver'] # ajouter dans cette liste tous les symboles 'importables'
 
 class SolverSaver:
@@ -15,7 +12,6 @@ class SolverSaver:
         self.fileName = fileName
         self.placedRouter = placedRouter
         self.firstCell = firstCell
-
         self.routerStr = ""
         self.fiberStr = ""
         self.nbFiber = 0
@@ -27,7 +23,6 @@ class SolverSaver:
         self.fiberStr = ""
         self.nbFiber = 0
         out = ""
-
         for road in self.firstCell.nextRoad:
             self.nbFiber += len(road.fiberCase)
             for case in road.fiberCase:

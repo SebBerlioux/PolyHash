@@ -9,17 +9,15 @@
     ainsi que tous les traitements supplémentaires utiles à son bon fonctionnement.
 """
 
-__version__ = "0.0.1"
-
+__version__ = "1.2.0"
 
 # [Optionnel] ajouter ici les principaux symboles, à importer facilement lors de l'usage du paquet polyhash
 
 # permet l'usage dans le module main de: from .polyhash import solve
 # plutôt que: from .polyhash.polyhsolver import solve
-from .polyhmodel import *
-from .polyhutils import *
+
 from .cell import *
 from .map import *
 from .backbone_road import *
-from .clock import PersonnalClock
 from .solversaver import SolverSaver
+from .polyhutils import *

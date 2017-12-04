@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 __all__ = ['Cell']
-from math import sqrt
 
+from math import sqrt
 
 class Cell:
     """
@@ -40,6 +37,7 @@ class Cell:
     def cover(self):
         """Indique qu'une cellule est déjà couverte"""
         self.isCovered = True
+
     def getNbNexCell(self):
         """Renvoit le nombre de routeur suivant"""
         return len(nextRoad)

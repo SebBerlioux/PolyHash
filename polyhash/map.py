@@ -1,14 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 __all__ = ['Map'] # ajouter dans cette liste tous les symboles 'importables'
 
-
-from PIL import Image
 from .cell import Cell
 from .routerlist import RouterList
 from .backbone_road import Path
-from multiprocessing import Process,Value
 import os, errno, math
 import random
 
@@ -43,7 +37,6 @@ class Map:
         if(fileName != None):
             self.initFromFile(fileName)
         self.score = -1
-
         directory = "./SAVE"
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -157,8 +150,6 @@ class Map:
             self.routerList.insert(router)
         self.routerList.listPotential.sort(reverse=True)
 
-
-
     def isNotFull(self):
         """Indique si la carte est totalement fibré"""
         for cell in self.notComputeRouter:
@@ -224,12 +215,14 @@ class Map:
             """Optimisation des chemins"""
             self.pathFinder()
         self.calculScore()
-    """Fonction calculant le score de la carte"""
+
     def calculScore(self):
+        """Fonction calculant le score de la carte"""
         for cell in self.notComputeRouter:
             if(cell.isCovered==True):
                 self.score += 1000
         self.score += self.budget
+
     def pathFinder(self):
         """Méthode qui trouve un arbre couvrant minimum reliant tous les routeurs grâce à l'algorithme de Prim"""
         cost = {}
@@ -251,7 +244,6 @@ class Map:
             cost[router] = math.inf
             pred[router] = None
             queue.append(router)
-
         """Tant que l'on a pas placé tout les routeurs"""
         for router in queue:
             """recherche du routeur placé le plus proche"""
@@ -262,7 +254,6 @@ class Map:
                         pred[router] = i
                         Last = router
             alreadyPlace.append(Last)
-
         """Parcours du résultat pour la création des chemins"""
         for router in pred.keys():
             if(pred[router]!=None):

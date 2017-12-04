@@ -1,5 +1,6 @@
 from polyhash import *
 import copy
+
 def main():
     print("............DEBUT DU PROGRAMME..........")
     saveLocation = "solution.out"

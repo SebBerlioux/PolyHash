@@ -1,9 +1,13 @@
+__all__ = ['Path'] # ajouter dans cette liste tous les symboles 'importables'
+
 class Path:
     """
     Classe représentant un chemin fibré
     """
-    """coût de une cellule de fibre"""
+
+    """Coût de une cellule de fibre"""
     backBoneCost = 0
+
     def __init__(self,beg=None,end=None,map=None):
         """Constructeur de la classe"""
         """Déclaration des cellules"""

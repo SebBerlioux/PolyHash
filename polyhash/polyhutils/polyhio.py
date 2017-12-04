@@ -9,11 +9,15 @@
     >>> from polyhash import say_hello
     >>> say_hello("World")
 """
+
 import os
 import sys
+
 __all__ = ['getArgument','getExecutionDirectory']  # ajouter dans cette liste tous les symboles 'importables'
+
 #repertoire d'excecution du script
 execDirectory = os.getcwd()
+
 #fichier passer en parametre (map a analyser)
 Args = sys.argv
 [execDirectory+"/"+ s for s in Args]

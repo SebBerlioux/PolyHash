@@ -14,6 +14,7 @@ def main():
     print("............PLACEMENT............")
     mapIn.placeRouter()
     print("SCORE : ",mapIn.score)
+    print("EXCEDENT : ",mapIn.budget)
     print("ROUTEURS : ",len(mapIn.placedRouter))
 
 

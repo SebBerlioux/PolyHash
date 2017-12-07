@@ -32,10 +32,11 @@ La solution sera sauvée dans le fichier solution.out dans le dossier racine du 
 
 ##Bugs et limitations
 
-
+- Algorithme de calcul du chemin de la fibre non optimal dans certains cas
+- Algorithme très rapide au détriment de certains calculs plus pointu qui auraient permis un gain de points que l'on a trouvé négligeable
 
 ##Informations utiles
 
 - Algorithmes de calcul et de placement routeurs très rapident pour de très bons résultats :
   - ~5sec pour charleston_road
-  - ~5min pour opera
+  - ~3min pour opera

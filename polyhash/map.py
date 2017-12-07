@@ -170,7 +170,7 @@ class Map:
             while routerNode != None and self.isNotFull()==True and routerNode.potential>0:
                 """Liste des routeurs inutiles"""
                 routerToRemove = []
-                random.shuffle(routerNode.cellList)
+                #random.shuffle(routerNode.cellList)
                 for router in routerNode.cellList:
                     AddActualRouter = False
                     """Trigger du resetPotentiel si le router n'est pas le premier à être placé"""
@@ -191,7 +191,7 @@ class Map:
                             router.setBestProch(PLACEDCELL)
                             pathToRouter = Path(router.bestRouter,router,self)
                             COST = pathToRouter.cost()
-                            if(self.budget - self.routerCosts-COST > 0):
+                            if(self.budget - self.routerCosts-COST >= 0):
                                 self.placedRouter.append(router)
                                 router.backBoneDist = router.getDistance(self.firstCell)
                                 PLACEDCELL.append(router)
@@ -203,9 +203,14 @@ class Map:
                                 noPlacement = False
                             else:
                                 pathToRouter.cancel(self)
+                        else:
+                            routerToRemove.append(router)
                     else:
                         """Si le potentiel du routeur a changé, on le ré-insert dans la liste chainée"""
-                        self.routerList.insert(router)
+                        if(router.isCovered==True):
+                            routerToRemove.append(router)
+                        else:
+                            self.routerList.insert(router)
                 if(len(routerToRemove)>0):
                     """Suppression des routeurs inutiles"""
                     for router in routerToRemove:
@@ -235,7 +240,7 @@ class Map:
         alreadyPlace = [self.firstCell]
         self.firstCell.nextRoad.clear()
         """Tri de la liste de routeur en fonction de la distance au backbone"""
-        self.placedRouter.sort(key= lambda Cell:(Cell.backBoneDist))
+        self.placedRouter.sort(key= lambda Cell:(Cell.backBoneDist,Cell.column))
         """Reinitialisation des chemins"""
         for router in self.placedRouter:
             self.budget += router.backRoad.cost()

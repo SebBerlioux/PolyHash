@@ -1,17 +1,16 @@
-# Projet Poly#
+# Projet Poly\#
 Pandiculation
 
 ## Objectifs
 
-Ce projet a pour but de générer l'ensemble des positions optimales pour des routeurs dans une pièce donnée
-Les pièces sont décrites par leurs colonnes, lignes, coût d'un routeur,côut d'une cellule de fibre,cellule initial reliant la fibre
-ainsi que une description de la carte avec des caractères ASCII
+Ce projet a pour but de générer l'ensemble des positions optimales pour des routeurs dans une pièce donnée. Les pièces sont décrites par leurs colonnes, lignes, coût d'un routeur, côut d'une cellule de fibre, cellule initial reliant la fibre ainsi que une description de la carte avec des caractères ASCII.
 
 ## L'équipe :
 
-Nicolas Cuadros , Sebastien Berlioux, Simon Bessenay, Alexandre Nonnon
+Nicolas Cuadros, Sebastien Berlioux, Simon Bessenay, Alexandre Nonnon
 
 ## Installation et utilisation du programme
+
 Téléchargez la dernière version, et à partir du dossier racine lancez dans un terminal :
 
  * python3 main.py nom_de_la_carte
@@ -22,13 +21,13 @@ La solution sera sauvée dans le fichier solution.out dans le dossier racine du 
 
 1) Calcul du potentiel de chaque cellule pouvant accueillir un routeur en fonction du nombre de cellules que le routeur couvrirait
 2) Insertion des cellules dans une liste chainée dans l'ordre du potentiel le plus important au plus faible
-3) Parcours de la liste chainée pour placer les routeurs sur la carte. Une fois un routeur placé, le potentiel de la cellule suivante dans la liste est recalculé et la cellule est retiré puis réinsérer dans la liste dans la liste si différent.
+3) Parcours de la liste chainée pour placer les routeurs sur la carte. Une fois un routeur placé, le potentiel de la cellule suivante dans la liste est recalculé et la cellule est retiré puis réinsérer dans la liste dans la liste si différent
 4) Un algorithme de calcul d'arbre optimisé pour relier les routeurs est lancé afin de placer la fibre au coup le plus faible possible
 5) Parcours de la liste des routeurs placés et de la liste des cellules fibrées pour écrire la solution dans un fichier
 
 ## Organisation du code
 
-
+Le répertoire principal du projet contient le fichier main.py qui sert à lancer le programme, un fichier .gitignore afin d'ignorer le cache python lors des commits, le répertoire contenant les cartes du projet, le readme en markdown et un dossier polyhash contenant toutes les classes que nous avons créer pour le projet. 
 
 ## Bugs et limitations
 

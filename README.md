@@ -1,4 +1,4 @@
-# Projet Poly\#
+# Projet PolyHash
 Pandiculation
 
 ## Objectifs
@@ -19,11 +19,11 @@ La solution sera sauvée dans le fichier solution.out dans le dossier racine du 
 
 ## Stratégie de résolution :
 
-1) Calcul du potentiel de chaque cellule pouvant accueillir un routeur en fonction du nombre de cellules que le routeur couvrirait
-2) Insertion des cellules dans une liste chainée dans l'ordre du potentiel le plus important au plus faible
-3) Parcours de la liste chainée pour placer les routeurs sur la carte. Une fois un routeur placé, le potentiel de la cellule suivante dans la liste est recalculé et la cellule est retiré puis réinsérer dans la liste dans la liste si différent
-4) Un algorithme de calcul d'arbre optimisé pour relier les routeurs est lancé afin de placer la fibre au coup le plus faible possible
-5) Parcours de la liste des routeurs placés et de la liste des cellules fibrées pour écrire la solution dans un fichier
+1. Calcul du potentiel de chaque cellule pouvant accueillir un routeur en fonction du nombre de cellules que le routeur couvrirait
+2. Insertion des cellules dans une liste chainée dans l'ordre du potentiel le plus important au plus faible
+3. Parcours de la liste chainée pour placer les routeurs sur la carte. Une fois un routeur placé, le potentiel de la cellule suivante dans la liste est recalculé et la cellule est retiré puis réinsérer dans la liste dans la liste si différent
+4. Un algorithme de calcul d'arbre optimisé pour relier les routeurs est lancé afin de placer la fibre au coup le plus faible possible
+5. Parcours de la liste des routeurs placés et de la liste des cellules fibrées pour écrire la solution dans un fichier
 
 ## Organisation du code
 

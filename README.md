@@ -27,7 +27,7 @@ La solution sera sauvée dans le fichier solution.out dans le dossier racine du 
 
 ## Organisation du code
 
-Le répertoire principal du projet contient le fichier main.py qui sert à lancer le programme, un fichier .gitignore afin d'ignorer le cache python lors des commits, le répertoire contenant les cartes du projet, le readme en markdown et un dossier polyhash contenant toutes les classes que nous avons créer pour le projet. 
+Le répertoire principal du projet contient le fichier main.py qui sert à lancer le programme, un fichier .gitignore afin d'ignorer le cache python lors des commits, le répertoire contenant les cartes du projet, le readme en markdown et un dossier polyhash contenant toutes les classes que nous avons créer pour la réalisation du projet. 
 
 ## Bugs et limitations
 

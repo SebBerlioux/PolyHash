@@ -31,12 +31,12 @@ Le répertoire principal du projet contient le fichier main.py qui sert à lance
 
 ## Répartition du travail
 
-Répartition prévue initialement :
+Répartition initialement prévue :
  - Nicolas : partie calcul des potentiels et écriture de la solution
  - Simon : partie placement des routeurs
  - Alexandre et Sébastien : partie placement de la fibre
 
-Cette répartition a plus ou moins été respecté car les membres de l'équipe n'ont pas fait que travailler sur les parties prévues au début.
+Cette répartition a plus ou moins été respecté car les membres de l'équipe n'ont pas fait que travailler sur leurs parties prévues au début.
 
 ## Bugs et limitations
 

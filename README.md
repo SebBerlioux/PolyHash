@@ -5,7 +5,7 @@ Pandiculation
 
 Ce projet a pour but de générer l'ensemble des positions optimales pour des routeurs dans une pièce donnée. Les pièces sont décrites par leurs colonnes, lignes, coût d'un routeur, côut d'une cellule de fibre, cellule initial reliant la fibre ainsi que une description de la carte avec des caractères ASCII.
 
-## L'équipe :
+## L'équipe
 
 Nicolas Cuadros, Sebastien Berlioux, Simon Bessenay, Alexandre Nonnon
 
@@ -17,7 +17,7 @@ Téléchargez la dernière version, et à partir du dossier racine lancez dans u
 
 La solution sera sauvée dans le fichier solution.out dans le dossier racine du programme.
 
-## Stratégie de résolution :
+## Stratégie de résolution
 
 1. Calcul du potentiel de chaque cellule pouvant accueillir un routeur en fonction du nombre de cellules que le routeur couvrirait
 2. Insertion des cellules dans une liste chainée dans l'ordre du potentiel le plus important au plus faible

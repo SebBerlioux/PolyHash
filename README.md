@@ -33,7 +33,7 @@ Le répertoire principal du projet contient le fichier main.py qui sert à lance
 
 - Algorithme de calcul du chemin de la fibre non optimal dans certains cas
 - Algorithme très rapide au détriment de certains calculs plus pointu qui auraient permis un gain de points que l'on a trouvé négligeable
-- Algorithme non déterministe(une sortie avec 829 routeurs et bien fibré,et une sortie avec 830 routeurs et un lien entre 2 routeurs manquant) sur la carte opera.in, cela proviendrai d'un problème de trie, et plusieurs tentatives peuvent être nécessaire pour obtenir un bon résultat,
+- Algorithme non déterministe (une sortie avec 829 routeurs et bien fibré,et une sortie avec 830 routeurs et un lien entre 2 routeurs manquant) sur la carte opera.in, cela proviendrai d'un problème de trie, et plusieurs tentatives peuvent être nécessaire pour obtenir un bon résultat,
 
 ## Informations utiles
 

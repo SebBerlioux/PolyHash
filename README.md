@@ -29,6 +29,15 @@ La solution sera sauvée dans le fichier solution.out dans le dossier racine du 
 
 Le répertoire principal du projet contient le fichier main.py qui sert à lancer le programme, un fichier .gitignore afin d'ignorer le cache python lors des commits, le répertoire contenant les cartes du projet, le readme en markdown et un dossier polyhash contenant toutes les classes que nous avons créer pour la réalisation du projet. 
 
+## Répartition du travail
+
+Répartition prévue initialement :
+ - Nicolas : partie calcul des potentiels et écriture de la solution
+ - Simon : partie placement des routeurs
+ - Alexandre et Sébastien : partie placement de la fibre
+
+Cette répartition a plus ou moins été respecté car les membres de l'équipe n'ont pas fait que travailler sur les parties prévues au début.
+
 ## Bugs et limitations
 
 - Algorithme de calcul du chemin de la fibre non optimal dans certains cas
